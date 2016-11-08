@@ -13,3 +13,9 @@ Exigences fonctionnelles:
 -Si deux attributs n'ont pas le même type, la sélection doit être considérée comme invalide.
 -Si la requête est invalide, le programmer doit afficher un message indiquant où se trouve l'erreur et en quoi elle consiste.
 -
+
+Etapes clefs:
+
+- Minimum : vérification syntaxe, traduction (affichage stdout)
+- SQLite : Communication avec SQLite, vérification types
+- Fin : Indication erreur
