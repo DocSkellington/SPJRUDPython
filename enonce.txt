@@ -1,0 +1,15 @@
+But : Traduire une requête SPJRUD vers une requête SQLite.
+
+Exigences fonctionnelles:
+-Input : syntaxe des fonctions: fct(arg1, arg2) où arg1 et arg2 sont des relations et peuvent être des fonctions.
+-Vérifications :
+    -Vérifier que la ligne présente une syntaxe correcte (bon nombre d'arguments, bonne écriture des parenthèses).
+    -Vérifier les noms des attributs existants.
+    -Vérifier les schémas des tables de données.
+    -Vérifier d'éventuels autres trucs.
+-La requête obtenue après la traduction doit être une requête SQL correspondant à la requête SPJRUD fournie dans l'input.
+-La requête doit être exécutable sur une base de données SQLite (avec les bonnes relations, ...).
+-L'utilisateur doit pouvoir rentrer le nom de la base de données sur laquelle il souhaite travailler ou qu'il souhaite créer.
+-Si deux attributs n'ont pas le même type, la sélection doit être considérée comme invalide.
+-Si la requête est invalide, le programmer doit afficher un message indiquant où se trouve l'erreur et en quoi elle consiste.
+-
