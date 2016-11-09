@@ -16,6 +16,6 @@ Exigences fonctionnelles:
 
 Etapes clefs:
 
-- Minimum : vérification syntaxe, traduction (affichage stdout)
-- SQLite : Communication avec SQLite, vérification types
-- Fin : Indication erreur
+- Minimum : vérification syntaxe, traduction (affichage stdout) : fin novembre
+- SQLite : Communication avec SQLite, vérification types : mi-décembre
+- Fin : Indication erreur + autres fonctionnalités : 26 décembre
