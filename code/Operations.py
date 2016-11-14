@@ -60,3 +60,24 @@ class Rename(Operation):
     def translate(self):
         pass
 
+class Projection(Operation):
+    def __init__(self, columns, operation):
+        super().__init__()
+        self.columns = columns
+        self.operation = operation
+
+    def check(self):
+        if not self.elements[0].check():
+            return False
+    
+        description = self.elements[0].getDescription()
+
+        for column in self.columns:
+            if not description.isColumnName(columns):
+                return False
+
+        description.keepColumns(self.columns)
+        return True
+
+    def translate(self):
+        pass

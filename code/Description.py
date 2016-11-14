@@ -17,6 +17,10 @@ class Description(object):
         """ Changes the name of the corresponding column into the newName. If the column does not exist, an exception is raised """
         pass
 
+    def keepColumns(self, names):
+        """ Keeps only the columns that have a name in the given list """
+        pass
+
     def canBeNull(self, name):
         """ Returns true if the values in the column with the name 'name' can be null, false otherwise """
         pass
