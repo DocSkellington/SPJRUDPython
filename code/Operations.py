@@ -1,10 +1,11 @@
 import abc
 import Database
+import Description
 
 class Operation(abc.ABC):
     def __init__(self, database):
         self.elements = []
-        self.description = []
+        self.description = Description()
         self.database = database
 
     @abc.abstractmethod
@@ -19,7 +20,8 @@ class Operation(abc.ABC):
 
     @abc.abstractmethod
     def getDescription(self):
-        return description
+        """ Returns a deep copy of the description of this operation """
+        return copy.deepcopy(description)
 
 class Relation(Operation):
     def __init__(self, nameTable):
@@ -36,3 +38,15 @@ class Relation(Operation):
     def translate(self):
         pass
 
+class Rename(Operation):
+    def __init__(self, name, newName, operation):
+        self.name = name
+        self.newName = newName
+        self.elements = [operation]
+
+    def check(self):
+        description = self.elements[0].getDescription()
+
+
+    def translate(self):
+        pass
