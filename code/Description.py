@@ -1,3 +1,4 @@
+import copy
 
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
@@ -7,14 +8,23 @@ class Description(object):
 
     def getColumnNames(self):
         """ Returns a tuple with the names of the columns """
-        pass
+        return copy.deepcopy(self.columns)
 
     def isColumnName(self, name):
         """ Returns true if the name is in the list of columns' names """
-        pass
+        return name in self.columns
 
     def changeColumnName(self, name, newName):
-        """ Changes the name of the corresponding column into the newName. If the column does not exist, an exception is raised """
+        """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, an exception is raised """
+        if not self.isColumnName(name) or self.isColumnName(newName):
+            raise Exception
+        for i in range(0, len(self.columns)):
+            if self.columns[i] == name:
+                self.columns[i] = newName
+                return
+
+    def getColumnType(self, name):
+        """ Return the type that the column 'name' supports (Integer, Text,...) """
         pass
 
     def keepColumns(self, names):

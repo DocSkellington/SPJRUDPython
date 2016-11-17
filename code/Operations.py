@@ -49,7 +49,7 @@ class Rename(Operation):
         if not self.elements[0].check():
             return False
 
-        description = self.elements[0].getDescription()
+        self.description = self.elements[0].getDescription()
 
         try:
             description.changeColumnName(name, newName)
@@ -64,13 +64,13 @@ class Projection(Operation):
     def __init__(self, columns, operation):
         super().__init__()
         self.columns = columns
-        self.operation = operation
+        self.elements = [operation]
 
     def check(self):
         if not self.elements[0].check():
             return False
     
-        description = self.elements[0].getDescription()
+        self.description = self.elements[0].getDescription()
 
         for column in self.columns:
             if not description.isColumnName(columns):
@@ -78,6 +78,33 @@ class Projection(Operation):
 
         description.keepColumns(self.columns)
         return True
+
+    def translate(self):
+        pass
+
+class Selection(Operation):
+    def __init__(self, attribut, comparator, other, cst, operation):
+        """ cst est un boolena. other est l'autre partie de la comparaison """
+        super().__init__()
+        self.attribut = attribut
+        self.comparator = comparator
+        self.other = other
+        self.cst = cst
+        self.elements = [operation]
+
+    def check(self):
+        if not self.elements[0].check:
+            return False
+
+        self.description = self.elements[0].getDescription()
+
+        if not self.description.isColumnName(attribut):
+            return False
+
+        if self.cst:
+            return self.description.getColumnType(attribut) is type(other)
+        else:
+            return self.description.isColumnName(other)
 
     def translate(self):
         pass
