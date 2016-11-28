@@ -81,6 +81,29 @@ class Projection(Operation):
     def translate(self):
         pass
 
+class Comparator(abc.ABC):
+    """ Defines a comparator used by the Selection/SELECT request """
+    @abc.abstractmethod
+    def translate(self):
+        """ Translates the comparator in Select into a comparator used by a SELECT request """
+        pass
+
+class Equal(Comparator):
+    def translate(self):
+        return "="
+
+class Different(Comparator):
+    def translate(self):
+        return "<>"
+
+class Greater(Comparator):
+    def translate(self):
+        return ">"
+
+class Lesser(Comparator):
+    def translate(self):
+        return "<"
+
 class Selection(Operation):
     def __init__(self, attribut, comparator, other, cst, operation):
         """ cst est un boolena. other est l'autre partie de la comparaison """

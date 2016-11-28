@@ -1,4 +1,7 @@
-# Demander à l'utilisateur quelle base de données
+import Operations
+
+class InvalidKeywordException(Exception):
+    pass
 
 def parserRelation(database, request):
     """ Parses a relation request and returns an object of type Relation """
@@ -53,13 +56,38 @@ def parse(request, pieces, ope=""):
                     curName += request[i]
         i += 1
         
-
+def buildAST(decomposition):
+    """ Takes the information from the decomposition list and returns the corresponding AST """
+    if decomposition[0] == "Select":
+        # Searching the comparator
+        if decomposition[0][0] == "Eq":
+            comparator = Equal()
+        elif decomposition[0][0] == "Di":
+            comparator = Different()
+        elif decomposition[0][0] == "Gr":
+            comparator = Greater()
+        elif decomposition[0][0] == "Le":
+            comparator = Lesser()
+        else:
+            raise InvalidKeywordException
+    elif decomposition[0] == "Proj":
+        pass
+    elif decomposition[0] == "Join":
+        pass
+    elif decomposition[0] == "Rename":
+        pass
+    elif decomposition[0] == "Union":
+        pass
+    elif decomposition[0] == "Difference":
+        pass
+    else:
+        raise InvalidKeywordException
 
 def parser(database, request):
     """ Parses the SPJRUD request and returns the corresponding AST """
     decompo = []
     parse(request, decompo)
-    print(decompo)
+    return buildAST(decompo) 
 
 print("Please type the name of the database you want to use.")
 database = input()
