@@ -3,10 +3,9 @@ import Database
 import Description
 
 class Operation(abc.ABC):
-    def __init__(self, database):
+    def __init__(self):
         self.elements = []
         self.description = Description()
-        self.database = database
 
     @abc.abstractmethod
     def check(self):
@@ -18,15 +17,15 @@ class Operation(abc.ABC):
         """ Translates the operation in SPJRUD into a SQL request """
         pass
 
-    @abc.abstractmethod
     def getDescription(self):
         """ Returns a deep copy of the description of this operation """
         return copy.deepcopy(description)
 
 class Relation(Operation):
-    def __init__(self, nameTable):
+    def __init__(self, nameTable, database):
         super().__init__()
         self.nameTable = nameTable
+        self.database = database
 
     def check(self):
         if (self.database.belongs(self.nameTable)):
