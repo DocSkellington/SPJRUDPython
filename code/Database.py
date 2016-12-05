@@ -6,6 +6,9 @@ class MissingDatabaseException(Exception):
 
 class Database(object):
     """ Defines a database and its operations """
+    def __str__(self):
+        return self.DB + " " + str(self.tables)
+
     def __init__(self):
         """ The constructor """
         self.DB = ""

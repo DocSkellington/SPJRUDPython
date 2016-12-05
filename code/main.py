@@ -63,22 +63,27 @@ def buildAST(decomposition, database):
     print(decomposition)
     if decomposition[0] == "Select":
         # Searching the comparator
-        if decomposition[0][0] == "Eq":
-            comparator = Equal()
-        elif decomposition[0][0] == "Di":
-            comparator = Different()
-        elif decomposition[0][0] == "Gr":
-            comparator = Greater()
-        elif decomposition[0][0] == "Le":
-            comparator = Lesser()
+        comparator = None
+        if decomposition[1][0] == "Eq":
+            comparator = Operations.Equal()
+        elif decomposition[1][0] == "Di":
+            comparator = Operations.Different()
+        elif decomposition[1][0] == "Gr":
+            comparator = Operations.Greater()
+        elif decomposition[1][0] == "Le":
+            comparator = Operations.Lesser()
         else:
             raise InvalidKeywordException
+        const = (decomposition[1][1][1] == 'Cst')
+        return Operations.Selection(decomposition[1][1][0], comparator, decomposition[1][1][2][0], const, buildAST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
-        pass
+        if len(decomposition[1][0]) == 0:
+            raise InvalidParameterException
+        return Operations.Projection(decomposition[1][0], buildAST(decomposition[1][1:], database))
     elif decomposition[0] == "Join":
         pass
     elif decomposition[0] == "Rename":
-        pass
+        return Operations.Rename(decomposition[1][0], decomposition[1][1], buildAST(decomposition[1][2:], database))
     elif decomposition[0] == "Union":
         pass
     elif decomposition[0] == "Diff":

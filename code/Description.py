@@ -2,6 +2,8 @@ import copy
 
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
+    def __str__(self):
+        return self.columns + " " + self.canNull + " " + self.types
 
     def convert_type(self, SQLType):
         """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float """

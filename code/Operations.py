@@ -28,6 +28,9 @@ class Relation(Operation):
         self.nameTable = nameTable
         self.database = database
 
+    def __repr__(self):
+        return "Relation: " + self.nameTable + " " + str(self.database) + " " + repr(self.elements)
+
     def check(self):
         if (self.database.belongs(self.nameTable)):
             self.description.parse(self.database.describe(self.nameTable))
@@ -44,6 +47,10 @@ class Rename(Operation):
         self.name = name
         self.newName = newName
         self.elements = [operation]
+        print(repr(self))
+
+    def __repr__(self):
+        return "Rename: " + self.name + " into " + self.newName + "; " + repr(self.elements)
 
     def check(self):
         if not self.elements[0].check():
@@ -90,20 +97,32 @@ class Comparator(abc.ABC):
         pass
 
 class Equal(Comparator):
-    def translate(self):
+    def __str__(self):
         return "="
 
-class Different(Comparator):
     def translate(self):
+        return str(self)
+
+class Different(Comparator):
+    def __str__(self):
         return "<>"
 
-class Greater(Comparator):
     def translate(self):
+        return str(self)
+
+class Greater(Comparator):
+    def __str__(self):
         return ">"
 
-class Lesser(Comparator):
     def translate(self):
+        return str(self)
+
+class Lesser(Comparator):
+    def __str__(self):
         return "<"
+
+    def translate(self):
+        return str(self)
 
 class Selection(Operation):
     def __init__(self, attribut, comparator, other, cst, operation):
@@ -114,6 +133,10 @@ class Selection(Operation):
         self.other = other
         self.cst = cst
         self.elements = [operation]
+        print(repr(self))
+
+    def __repr__(self):
+        return "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other + " (" + str(self.cst) + ") " + repr(self.elements)
 
     def check(self):
         if not self.elements[0].check():
