@@ -1,6 +1,6 @@
 import copy
 
-class InvalidColumnName(Exception):
+class InvalidColumnNameException(Exception):
     pass
 
 class Description(object):
@@ -9,9 +9,12 @@ class Description(object):
         return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
 
     def convert_type(self, SQLType):
-        """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float """
+        """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float
+        Args:
+            SQLType (str): a string that contains an SQL VARTYPE
+        """
 
-        """ What do we do with DATE, TIME, TIMESTAMP, INTERVAL, ARRAY, MULTISET, XML?"""
+        #What do we do with DATE, TIME, TIMESTAMP, INTERVAL, ARRAY, MULTISET, XML?
         types = SQLType.split('(')
         if types[0] == 'VARCHAR' or types[0] == 'CHAR' or types[0] == 'CHARACTER' or types[0] == 'BINARY' or types[0] == 'VARBINARY':
             return str
@@ -21,9 +24,12 @@ class Description(object):
             return int
 
     def parse(self, describe):
-        """ Reads the result of a describe request and puts the information into this structure """
+        """ Reads the result of a describe request and puts the information into this structure
+        Args:
+            describe (str): the result of a describe request
+        """
 
-        """ Describe looks like: (ID, 'Name', 'Type', is NotNull, DefaultValue, is PK)"""
+        """ A tuple in describe looks like: (ID, 'Name', 'Type', is NotNull, DefaultValue, is PK)"""
         self.columns = []
         self.canNull = {}
         self.types = {}
@@ -33,28 +39,43 @@ class Description(object):
             self.types[i[1]] = self.convert_type(i[2])
 
     def getColumnNames(self):
-        """ Returns a tuple with the names of the columns """
+        """ Returns a list with the names of the columns """
         return copy.deepcopy(self.columns)
 
     def isColumnName(self, name):
-        """ Returns true if the name is in the list of columns' names """
+        """ Returns true if the name is in the list of columns' names
+        Args:
+            name (str): The name we want to check
+        """
         return name in self.columns
 
     def changeColumnName(self, name, newName):
-        """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, an exception is raised """
+        """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, InvalidColumnNameException is raised
+        Args:
+            name (str): The name we want to change
+            newName (str): The name we want to use
+        """
         if not self.isColumnName(name) or self.isColumnName(newName):
-            raise InvalidColumnName()
+            raise InvalidColumnNameException(name + " is not a column name")
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
                 self.columns[i] = newName
                 return
 
     def getColumnType(self, name):
-        """ Return the type that the column 'name' supports (Integer, Text,...) """
+        """ Return the type that the column 'name' supports (Integer, Text,...)
+        Args:
+            name (str): The name of the column
+        """
+        if not self.isColumnName(name):
+            raise InvalidColumnNameException(name + " is not a column name")
         return self.types[name]
 
     def keepColumns(self, names):
-        """ Keeps only the columns that have a name in the given list """
+        """ Keeps only the columns whose name is in the given list
+        Args:
+            names (list of str): The names of the columns we want to keep
+        """
         columns = []
         canNull = {}
         types = {}
@@ -67,5 +88,10 @@ class Description(object):
 
 
     def canBeNull(self, name):
-        """ Returns true if the values in the column with the name 'name' can be null, false otherwise """
+        """ Returns true if the values in the column with the name 'name' can be null, false otherwise
+        Args:
+            name (str): The name of a column
+        """
+        if not self.isColumnName(name):
+            raise InvalidColumnNameException(name + " is not a column name")
         return self.canNull[name]

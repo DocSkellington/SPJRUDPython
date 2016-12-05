@@ -61,7 +61,7 @@ class Rename(Operation):
         try:
             self.description.changeColumnName(self.name, self.newName)
             return True
-        except Description.InvalidColumnName:
+        except Description.InvalidColumnNameException:
             return False
 
     def translate(self):
