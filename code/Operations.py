@@ -1,11 +1,12 @@
 import abc
 import Database
 import Description
+import copy
 
 class Operation(abc.ABC):
     def __init__(self):
         self.elements = []
-        self.description = Description()
+        self.description = Description.Description()
 
     @abc.abstractmethod
     def check(self):
@@ -19,7 +20,7 @@ class Operation(abc.ABC):
 
     def getDescription(self):
         """ Returns a deep copy of the description of this operation """
-        return copy.deepcopy(description)
+        return copy.deepcopy(self.description)
 
 class Relation(Operation):
     def __init__(self, nameTable, database):
@@ -72,10 +73,10 @@ class Projection(Operation):
         self.description = self.elements[0].getDescription()
 
         for column in self.columns:
-            if not description.isColumnName(columns):
+            if not self.description.isColumnName(self.columns):
                 return False
 
-        description.keepColumns(self.columns)
+        self.description.keepColumns(self.columns)
         return True
 
     def translate(self):
@@ -115,18 +116,18 @@ class Selection(Operation):
         self.elements = [operation]
 
     def check(self):
-        if not self.elements[0].check:
+        if not self.elements[0].check():
             return False
 
         self.description = self.elements[0].getDescription()
 
-        if not self.description.isColumnName(attribut):
+        if not self.description.isColumnName(self.attribut):
             return False
 
         if self.cst:
-            return self.description.getColumnType(attribut) is type(other)
+            return self.description.getColumnType(self.attribut) is type(self.other)
         else:
-            return self.description.isColumnName(other)
+            return self.description.isColumnName(self.other)
 
     def translate(self):
         pass

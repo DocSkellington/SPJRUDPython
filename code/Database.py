@@ -13,15 +13,14 @@ class Database(object):
         self.c = None
         self.tables = []
 
-    def connectToSQL(self, DB):
+    def connect_to_SQL(self, DB):
         """ Connects to a SQL database """
         if self.DB != DB:
             self.DB = DB
             self.conn = sqlite3.connect(DB)
-            self.c = conn.cursor()
+            self.c = self.conn.cursor()
             self.c.execute("SELECT name FROM sqlite_master WHERE type='table'")
             self.tables = self.c.fetchall()
-            self.tables = self.tables[0:len(self.tables)-1]
 
     def execute(self, command):
         """ Executes a command """
@@ -51,7 +50,7 @@ class Database(object):
         """ Retrieves the information of the table """
         if self.conn != None:
             self.c.execute('PRAGMA TABLE_INFO({})'.format(table))
-            info = c.fetchall()
+            info = self.c.fetchall()
             return info
         else:
             raise MissingDatabaseException()
@@ -59,6 +58,6 @@ class Database(object):
     def belongs(self, table):
         """ Does the table belong to the database ? """
         if self.conn != None:
-            return table in self.tables
+            return (table,) in self.tables
         else:
             raise MissingDatabaseException()

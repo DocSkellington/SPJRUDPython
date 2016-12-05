@@ -1,4 +1,5 @@
 import Operations
+from Database import Database
 
 class InvalidKeywordException(Exception):
     pass
@@ -56,8 +57,10 @@ def parse(request, pieces, ope=""):
                     curName += request[i]
         i += 1
         
-def buildAST(decomposition):
+def buildAST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST """
+    print("Working on:")
+    print(decomposition)
     if decomposition[0] == "Select":
         # Searching the comparator
         if decomposition[0][0] == "Eq":
@@ -78,8 +81,10 @@ def buildAST(decomposition):
         pass
     elif decomposition[0] == "Union":
         pass
-    elif decomposition[0] == "Difference":
+    elif decomposition[0] == "Diff":
         pass
+    elif decomposition[0] == "Rel":
+        return Operations.Relation(decomposition[1][0], database)
     else:
         raise InvalidKeywordException
 
@@ -87,13 +92,15 @@ def parser(database, request):
     """ Parses the SPJRUD request and returns the corresponding AST """
     decompo = []
     parse(request, decompo)
-    return buildAST(decompo) 
+    return buildAST(decompo, database) 
 
 print("Please type the name of the database you want to use.")
 database = input()
+db = Database()
+db.connect_to_SQL(database)
 print("Please insert your SPJRUD request.")
 request = input()
-ast = parser(database, request)
+ast = parser(db, request)
 if ast.check():
     print("ok")
 else:
