@@ -34,7 +34,13 @@ def decomposition(request, pieces):
             if inStr:
                 curName += request[i]
             else:
-                if request[i] == '(':
+                if request[i] == '[':
+                    # A [ marks the start of a list (used by Projection)
+                    subp = []
+                    k = decomposition(request[i+1:], subp)
+                    pieces.append(subp)
+                    i += k+1
+                elif request[i] == '(':
                     # If we have a (, we have a new operation to parse.
                     pieces.append(curName)
                     curName = ""
@@ -48,8 +54,8 @@ def decomposition(request, pieces):
                     if curName != "":
                         pieces.append(curName)
                     curName = ""
-                elif request[i] == ')':
-                    # A ) marks the end of an operation. In this case, we return the index we arrived at
+                elif request[i] == ')' or request[i] == ']':
+                    # A ) marks the end of an operation and a ] marks the end of a list. In this case, we return the index we arrived at
                     if curName != "":
                         pieces.append(curName)
                         curName = ""
@@ -63,7 +69,7 @@ def decomposition(request, pieces):
         if inStr:
             raise InvalidRequestException("Missing a " + typeStr + " in " + request[0:])
         else:
-            raise InvalidRequestException("Missing a ')' in " + request[0:])
+            raise InvalidRequestException("Missing a ')' or ']' in " + request[0:])
         
 def buildAST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST
@@ -95,6 +101,7 @@ def buildAST(decomposition, database):
     elif decomposition[0] == "Join":
         pass
     elif decomposition[0] == "Rename":
+        # We give the name to replace, the new name to use and the operation to proceed next
         return Operations.Rename(decomposition[1][0], decomposition[1][1], buildAST(decomposition[1][2:], database))
     elif decomposition[0] == "Union":
         pass
@@ -120,7 +127,7 @@ def parser(database, request):
 print("Please type the name of the database you want to use.")
 database = input()
 db = Database()
-db.connect_to_SQL(database)
+db.connect_to_SQL(database + ".db")
 print("Please insert your SPJRUD request.")
 request = input()
 ast = parser(db, request)
