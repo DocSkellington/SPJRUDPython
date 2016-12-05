@@ -4,6 +4,9 @@ from Database import Database
 class InvalidKeywordException(Exception):
     pass
 
+class InvalidRequestException(Exception):
+    pass
+
 def decomposition(request, pieces):
     """ Parses a SPJRUD request and return a list with the keywords.
     For example, Proj(['Name'], Rel('Cities')) returns ['Proj', [['Name'], 'Rel', ['Cities']]]. See exempleDécomposition.txt for further example
@@ -55,6 +58,12 @@ def decomposition(request, pieces):
                     # A space is considered as a part of the string we are working on
                     curName += request[i]
         i += 1
+
+    if curName != "":
+        if inStr:
+            raise InvalidRequestException("Missing a " + typeStr + " in " + request[0:])
+        else:
+            raise InvalidRequestException("Missing a ')' in " + request[0:])
         
 def buildAST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST
