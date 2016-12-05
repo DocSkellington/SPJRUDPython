@@ -43,7 +43,7 @@ class TestCheckOperations(unittest.TestCase):
         self.assertTrue(rename.check())
         rename = Operations.Rename("City", "Name", Operations.Relation("Cities", self.db))
         self.assertFalse(rename.check())
-        rename = Operations.Relation("Name", "City", Operations.Relation("Citiejikq", self.db))
+        rename = Operations.Rename("Name", "City", Operations.Relation("Citiejikq", self.db))
         self.assertFalse(rename.check())
 
 if __name__ == '__main__':

@@ -4,20 +4,10 @@ from Database import Database
 class InvalidKeywordException(Exception):
     pass
 
-def parserRelation(database, request):
-    """ Parses a relation request and returns an object of type Relation """
-    name = ""
-    inStr = False
-    for i in range(len(request)):
-        if request[i] == '"':
-            inStr = not inStr
-        elif inStr:
-            name += request[i]
-        else:
-            raise Exception
-    return Relation(name, database)
-
 def parse(request, pieces, ope=""):
+    """ Parses a SPJRUD request and return a list with the keywords.
+    For example, Proj(['Name'], Rel('Cities')) returns ['Proj', [['Name'], 'Rel', ['Cities']]]. See exempleDécomposition.txt for further example
+    """
     curName = ""
     j = 0
     inStr = False
@@ -73,12 +63,12 @@ def buildAST(decomposition, database):
         elif decomposition[1][0] == "Le":
             comparator = Operations.Lesser()
         else:
-            raise InvalidKeywordException
+            raise InvalidKeywordException(decomposition[1][0] + " is not a valid comparator")
         const = (decomposition[1][1][1] == 'Cst')
         return Operations.Selection(decomposition[1][1][0], comparator, decomposition[1][1][2][0], const, buildAST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
-            raise InvalidParameterException
+            raise InvalidParameterException("You must provide at least one column to Project")
         return Operations.Projection(decomposition[1][0], buildAST(decomposition[1][1:], database))
     elif decomposition[0] == "Join":
         pass
@@ -91,7 +81,7 @@ def buildAST(decomposition, database):
     elif decomposition[0] == "Rel":
         return Operations.Relation(decomposition[1][0], database)
     else:
-        raise InvalidKeywordException
+        raise InvalidKeywordException(decomposition[0] + " is not a valid operation. Please refer to the manual.")
 
 def parser(database, request):
     """ Parses the SPJRUD request and returns the corresponding AST """

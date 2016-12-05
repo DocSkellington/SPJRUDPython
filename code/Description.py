@@ -1,5 +1,8 @@
 import copy
 
+class InvalidColumnName(Exception):
+    pass
+
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
     def __str__(self):
@@ -44,7 +47,7 @@ class Description(object):
     def changeColumnName(self, name, newName):
         """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, an exception is raised """
         if not self.isColumnName(name) or self.isColumnName(newName):
-            raise Exception
+            raise InvalidColumnName()
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
                 self.columns[i] = newName

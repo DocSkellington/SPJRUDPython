@@ -56,12 +56,13 @@ class Rename(Operation):
         if not self.elements[0].check():
             return False
 
+        print("elements[0] ok")
         self.description = self.elements[0].getDescription()
 
         try:
-            description.changeColumnName(name, newName)
+            self.description.changeColumnName(self.name, self.newName)
             return True
-        except:
+        except Description.InvalidColumnName:
             return False
 
     def translate(self):

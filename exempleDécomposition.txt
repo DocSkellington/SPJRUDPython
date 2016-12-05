@@ -1,3 +1,3 @@
 Proj(['Population'], Join(Rename('Name', 'Capital', Rel('Cities')), Select(Eq('Country', Cst('Mali')), Rel('CC'))))
 ->
-['Proj', ['Population', 'Join', ['Rename', ['Name', 'Capital', 'Rel', ['Cities']], 'Select', ['Eq', ['Country', 'Cst', ['Mali']], 'Rel', ['CC']]]]]
+['Proj', [['Population'], 'Join', ['Rename', ['Name', 'Capital', 'Rel', ['Cities']], 'Select', ['Eq', ['Country', 'Cst', ['Mali']], 'Rel', ['CC']]]]]
