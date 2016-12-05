@@ -47,7 +47,7 @@ class Rename(Operation):
         self.name = name
         self.newName = newName
         self.elements = [operation]
-        print(repr(self))
+        #print(repr(self))
 
     def __repr__(self):
         return "Rename: " + self.name + " into " + self.newName + "; " + repr(self.elements)
@@ -56,7 +56,6 @@ class Rename(Operation):
         if not self.elements[0].check():
             return False
 
-        print("elements[0] ok")
         self.description = self.elements[0].getDescription()
 
         try:
@@ -73,6 +72,10 @@ class Projection(Operation):
         super().__init__()
         self.columns = columns
         self.elements = [operation]
+        #print(repr(self))
+
+    def __repr__(self):
+        return "Projection: " + str(self.columns) + " " + repr(self.elements)
 
     def check(self):
         if not self.elements[0].check():
@@ -81,7 +84,7 @@ class Projection(Operation):
         self.description = self.elements[0].getDescription()
 
         for column in self.columns:
-            if not self.description.isColumnName(self.columns):
+            if not self.description.isColumnName(column):
                 return False
 
         self.description.keepColumns(self.columns)
@@ -134,7 +137,7 @@ class Selection(Operation):
         self.other = other
         self.cst = cst
         self.elements = [operation]
-        print(repr(self))
+        #print(repr(self))
 
     def __repr__(self):
         return "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other + " (" + str(self.cst) + ") " + repr(self.elements)

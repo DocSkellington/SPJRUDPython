@@ -6,7 +6,7 @@ class InvalidColumnName(Exception):
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
     def __str__(self):
-        return self.columns + " " + self.canNull + " " + self.types
+        return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
 
     def convert_type(self, SQLType):
         """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float """
@@ -14,27 +14,23 @@ class Description(object):
         """ What do we do with DATE, TIME, TIMESTAMP, INTERVAL, ARRAY, MULTISET, XML?"""
         types = SQLType.split('(')
         if types[0] == 'VARCHAR' or types[0] == 'CHAR' or types[0] == 'CHARACTER' or types[0] == 'BINARY' or types[0] == 'VARBINARY':
-            return 'str'
+            return str
         elif types[0] == 'DECIMAL' or types[0] == 'NUMERIC' or types[0] == 'FLOAT' or types[0] == 'DOUBLE PRECISION':
-            return 'float'
+            return float
         elif types[0] == 'INTEGER' or types[0] == 'BIGINT':
-            return 'int'
-        print(types)
+            return int
 
     def parse(self, describe):
         """ Reads the result of a describe request and puts the information into this structure """
 
         """ Describe looks like: (ID, 'Name', 'Type', is NotNull, DefaultValue, is PK)"""
-        """ TODO """
-        print(describe)
         self.columns = []
-        self.canNull = []
-        self.types = []
+        self.canNull = {}
+        self.types = {}
         for i in describe:
             self.columns.append(i[1])
-            self.canNull.append(i[3] == 0)
-            self.types.append(self.convert_type(i[2]))
-        print(self.columns)
+            self.canNull[i[1]] = (i[3] == 0)
+            self.types[i[1]] = self.convert_type(i[2])
 
     def getColumnNames(self):
         """ Returns a tuple with the names of the columns """
@@ -55,7 +51,7 @@ class Description(object):
 
     def getColumnType(self, name):
         """ Return the type that the column 'name' supports (Integer, Text,...) """
-        pass
+        return self.types[name]
 
     def keepColumns(self, names):
         """ Keeps only the columns that have a name in the given list """

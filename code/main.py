@@ -49,8 +49,6 @@ def parse(request, pieces, ope=""):
         
 def buildAST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST """
-    print("Working on:")
-    print(decomposition)
     if decomposition[0] == "Select":
         # Searching the comparator
         comparator = None
