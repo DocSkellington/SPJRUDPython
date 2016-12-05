@@ -4,6 +4,8 @@ import Description
 import copy
 
 class Operation(abc.ABC):
+    """ Defines the common attributs of the operations
+    """
     def __init__(self):
         self.elements = []
         self.description = Description.Description()
@@ -23,20 +25,45 @@ class Operation(abc.ABC):
         return copy.deepcopy(self.description)
 
 class Relation(Operation):
-    def __init__(self, nameTable, database):
+    """ Defines a relation.
+    """
+    def __init__(self, nameRelation):
         super().__init__()
-        self.nameTable = nameTable
+        self.nameRelation = nameRelation
+
+class RelationTable(Relation):
+    """ Defines a relation based on a table from the database
+    """
+    def __init__(self, nameRelation, database):
+        super().__init__(nameRelation)
         self.database = database
 
     def __repr__(self):
-        return "Relation: " + self.nameTable + " " + str(self.database) + " " + repr(self.elements)
+        return "Relation: " + self.nameRelation + " " + str(self.database) + " " + repr(self.elements)
 
     def check(self):
-        if (self.database.belongs(self.nameTable)):
-            self.description.parse(self.database.describe(self.nameTable))
+        if (self.database.belongs(self.nameRelation)):
+            self.description.parse(self.database.describe(self.nameRelation))
             return True
         else:
             return False
+
+    def translate(self):
+        pass
+
+class RelationSchema(Relation):
+    """ Defines a relation for which the user gave the schema
+    """
+    def __init__(self, nameRelation, description):
+        super().__init__(nameRelation)
+        self.description = description
+
+    def __repr__(self):
+        return "Relation: " + self.nameRelation + " " + str(description) + " " + repr(self.elements)
+
+    def check(self):
+        # Since it was possible to construct the relation, everything is fine
+        return True
 
     def translate(self):
         pass

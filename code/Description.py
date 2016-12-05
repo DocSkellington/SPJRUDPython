@@ -3,7 +3,15 @@ import copy
 class InvalidColumnNameException(Exception):
     pass
 
+class DoubleColumnNameException(Exception):
+    pass
+
 class Description(object):
+    def __init__(self):
+        self.columns = []
+        self.canNull = {}
+        self.types = {}
+
     """ Defines the description of a relation (columns, types,...) """
     def __str__(self):
         return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
@@ -86,6 +94,24 @@ class Description(object):
                 canNull[column] = self.canNull[column]
                 types[column] = self.types[column]
 
+        self.column = columns
+        self.canNull = canNull
+        self.types = types
+
+
+    def addColumn(self, name, vartype, canNull):
+        """ Adds a column into the description. The column is defined by a name, a vartype and if it can contain NULL
+            The schema cannot contain multiple columns with the same name
+        Args:
+            name (str): The name of the column
+            vartype (type): The type of the column (in Python type)
+            canNull (boolean): Whether the column can contain NULL or not
+        """
+        if self.isColumnName(name):
+            raise DoubleColumnNameException(name + " is already in the schema")
+        self.columns.append(name)
+        self.canNull[name] = canNull
+        self.types[name] = vartype
 
     def canBeNull(self, name):
         """ Returns true if the values in the column with the name 'name' can be null, false otherwise

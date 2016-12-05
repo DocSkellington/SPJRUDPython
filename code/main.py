@@ -1,5 +1,6 @@
 import Operations
-from Database import Database
+import Database
+import Description
 
 class InvalidKeywordException(Exception):
     pass
@@ -70,7 +71,18 @@ def decomposition(request, pieces):
             raise InvalidRequestException("Missing a " + typeStr + " in " + request[0:])
         else:
             raise InvalidRequestException("Missing a ')' or ']' in " + request[0:])
-        
+
+def buildRelationSchema(decomposition):
+    """ Builds a RelationSchema from the decomposition list
+    Args:
+        decomposition (list of str): A sub-part of the decomposition list obtained from the decomposition function
+    """
+    description = Description.Description()
+    name = decomposition[0]
+    for column in decomposition[2:]:
+        description.addColumn(column[0], column[1], column[2])
+    return Operations.RelationSchema(name, description)
+
 def buildAST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST
     Args:
@@ -108,7 +120,10 @@ def buildAST(decomposition, database):
     elif decomposition[0] == "Diff":
         pass
     elif decomposition[0] == "Rel":
-        return Operations.Relation(decomposition[1][0], database)
+        if decomposition[1][0] == "Table":
+            return Operations.RelationTable(decomposition[1][1][0], database)
+        elif decomposition[1][0] == "Schema":
+            return buildRelationSchema(decomposition[1][1])
     else:
         raise InvalidKeywordException(decomposition[0] + " is not a valid operation. Please refer to the manual.")
 
@@ -126,7 +141,7 @@ def parser(database, request):
 
 print("Please type the name of the database you want to use.")
 database = input()
-db = Database()
+db = Database.Database()
 db.connect_to_SQL(database + ".db")
 print("Please insert your SPJRUD request.")
 request = input()
