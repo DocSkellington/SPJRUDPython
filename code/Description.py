@@ -55,8 +55,17 @@ class Description(object):
 
     def keepColumns(self, names):
         """ Keeps only the columns that have a name in the given list """
-        pass
+        columns = []
+        canNull = {}
+        types = {}
+
+        for column in self.columns:
+            if column in names:
+                columns.append(column)
+                canNull[column] = self.canNull[column]
+                types[column] = self.types[column]
+
 
     def canBeNull(self, name):
         """ Returns true if the values in the column with the name 'name' can be null, false otherwise """
-        pass
+        return self.canNull[name]
