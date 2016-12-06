@@ -27,15 +27,9 @@ class Operation(abc.ABC):
 class Relation(Operation):
     """ Defines a relation.
     """
-    def __init__(self, nameRelation):
+    def __init__(self, nameRelation, database):
         super().__init__()
         self.nameRelation = nameRelation
-
-class RelationTable(Relation):
-    """ Defines a relation based on a table from the database
-    """
-    def __init__(self, nameRelation, database):
-        super().__init__(nameRelation)
         self.database = database
 
     def __repr__(self):
@@ -47,23 +41,6 @@ class RelationTable(Relation):
             return True
         else:
             return False
-
-    def translate(self):
-        pass
-
-class RelationSchema(Relation):
-    """ Defines a relation for which the user gave the schema
-    """
-    def __init__(self, nameRelation, description):
-        super().__init__(nameRelation)
-        self.description = description
-
-    def __repr__(self):
-        return "Relation: " + self.nameRelation + " " + str(description) + " " + repr(self.elements)
-
-    def check(self):
-        # Since it was possible to construct the relation, everything is fine
-        return True
 
     def translate(self):
         pass

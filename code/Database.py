@@ -1,13 +1,20 @@
 import sqlite3
+import Description
 
 class MissingDatabaseException(Exception):
     """ Handles the case where the user tries to use a command on a database when no database is loaded"""
     pass
 
+class DoubledTableException(Exception):
+    pass
+
+class MissingTableException(Exception):
+    pass
+
 class Database(object):
     """ Defines a database and its operations """
     def __str__(self):
-        return self.DB + " " + str(self.tables)
+        return self.DB + " " + str(self.tables) + " " + str(self.descriptions)
 
     def __init__(self):
         """ The constructor """
@@ -15,15 +22,44 @@ class Database(object):
         self.conn = None
         self.c = None
         self.tables = []
+        self.descriptions = {}
 
     def connect_to_SQL(self, DB):
-        """ Connects to a SQL database """
+        """ Connects to a SQL database, retrieves the name and the description of the tables from the database
+        Args:
+            DB (str): The name of the database file
+        """
         if self.DB != DB:
             self.DB = DB
             self.conn = sqlite3.connect(DB)
             self.c = self.conn.cursor()
             self.c.execute("SELECT name FROM sqlite_master WHERE type='table'")
             self.tables = self.c.fetchall()
+            for table in self.tables:
+                desc = self.describe(table[0])
+                description = Description.Description()
+                description.parse(desc)
+                self.add_description(table, description)
+
+    def add_description(self, table, description):
+        """ Adds a description in the database schema.
+            The table can only appear once. Otherwise, an DoubledTableException is thrown
+        Args:
+            table (str): The name of the table
+            description (Description.Description): The description of the table
+        """
+        if table in self.descriptions:
+            raise DoubledTableException(table + " is already in the schema of the database")
+        self.descriptions[table] = description
+
+    def get_description(self, table):
+        """ Returns the description corresponding to the given table name. If the table is not stored, an MissingTableException is thrown
+        Args:
+            table (str): The name of the table
+        """
+        if table not in self.descriptions:
+            raise MissingTableException(table + " is not a known table")
+        return self.descriptions[table]
 
     def execute(self, command):
         """ Executes a command """

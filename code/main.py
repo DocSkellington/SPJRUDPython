@@ -72,18 +72,7 @@ def decomposition(request, pieces):
         else:
             raise InvalidRequestException("Missing a ')' or ']' in " + request[0:])
 
-def buildRelationSchema(decomposition):
-    """ Builds a RelationSchema from the decomposition list
-    Args:
-        decomposition (list of str): A sub-part of the decomposition list obtained from the decomposition function
-    """
-    description = Description.Description()
-    name = decomposition[0]
-    for column in decomposition[2:]:
-        description.addColumn(column[0], column[1], column[2])
-    return Operations.RelationSchema(name, description)
-
-def buildAST(decomposition, database):
+def build_AST(decomposition, database):
     """ Takes the information from the decomposition list and returns the corresponding AST
     Args:
         decomposition (list of str): The result of the decomposition function (or a subpart of it)
@@ -105,25 +94,22 @@ def buildAST(decomposition, database):
         # Is it a constant?
         const = (decomposition[1][1][1] == 'Cst')
         # We give the column name, the comparator, the constant/column name to compare, if it is a constant and the sub operation
-        return Operations.Selection(decomposition[1][1][0], comparator, decomposition[1][1][2][0], const, buildAST(decomposition[1][2:], database))
+        return Operations.Selection(decomposition[1][1][0], comparator, decomposition[1][1][2][0], const, build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
             raise InvalidParameterException("You must provide at least one column to Project")
-        return Operations.Projection(decomposition[1][0], buildAST(decomposition[1][1:], database))
+        return Operations.Projection(decomposition[1][0], build_AST(decomposition[1][1:], database))
     elif decomposition[0] == "Join":
         pass
     elif decomposition[0] == "Rename":
         # We give the name to replace, the new name to use and the operation to proceed next
-        return Operations.Rename(decomposition[1][0], decomposition[1][1], buildAST(decomposition[1][2:], database))
+        return Operations.Rename(decomposition[1][0], decomposition[1][1], build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Union":
         pass
     elif decomposition[0] == "Diff":
         pass
     elif decomposition[0] == "Rel":
-        if decomposition[1][0] == "Table":
-            return Operations.RelationTable(decomposition[1][1][0], database)
-        elif decomposition[1][0] == "Schema":
-            return buildRelationSchema(decomposition[1][1])
+        return Operations.Relation(decomposition[1][0], database)
     else:
         raise InvalidKeywordException(decomposition[0] + " is not a valid operation. Please refer to the manual.")
 
@@ -137,12 +123,43 @@ def parser(database, request):
     # We decompose the request into a list we can use
     decomposition(request, decompo)
     # We can build the AST with the list
-    return buildAST(decompo, database) 
+    return build_AST(decompo, database) 
 
-print("Please type the name of the database you want to use.")
-database = input()
+def parse_schema(schema, database):
+    """ Parses a schema of a the table from the schema given by the user and add the description in the database
+    Args:
+        schema (str): The string the user typed with the schema he wants to use
+        database (Database.Database): The database to use
+    """
+    decompo = []
+    decomposition(schema, decompo)
+    #print(decompo)
+    description = Description.Description()
+    name = decompo[0]
+    for column in decompo[1:]:
+        if len(column) == 3:
+            description.addColumn(column[0], column[1], column[2])
+    database.add_description(name, description)
+
+
+print("Do you want to use an existing database? (y/n)")
+res = input()
+while res != 'y' and res != 'n':
+    print("Please type y if you want to use an existing database or n otherwise")
+    res = input()
+
 db = Database.Database()
-db.connect_to_SQL(database + ".db")
+if res == 'y':
+    print("Please type the name of the database you want to use.")
+    database = input()
+    db.connect_to_SQL(database + ".db")
+else:
+    print("Please type the schema of a table as following: Name, (ColumnName, the type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
+    res = input()
+    while res != '':
+        parse_schema(res, db)
+        print(db)
+        res = input()
 print("Please insert your SPJRUD request.")
 request = input()
 ast = parser(db, request)

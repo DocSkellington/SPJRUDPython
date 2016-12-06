@@ -7,14 +7,18 @@ class DoubleColumnNameException(Exception):
     pass
 
 class Description(object):
+    """ Defines the description of a relation (columns, types,...) """
+
     def __init__(self):
         self.columns = []
         self.canNull = {}
         self.types = {}
 
-    """ Defines the description of a relation (columns, types,...) """
     def __str__(self):
         return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
+
+    def __repr__(self):
+        return str(self)
 
     def convert_type(self, SQLType):
         """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float
