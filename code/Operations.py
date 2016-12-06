@@ -3,6 +3,9 @@ import Database
 import Description
 import copy
 
+class InvalidTypesException(Exception):
+    pass
+
 class Operation(abc.ABC):
     """ Defines the common attributs of the operations
     """
@@ -36,10 +39,12 @@ class Relation(Operation):
         return "Relation: " + self.nameRelation + " " + str(self.database) + " " + repr(self.elements)
 
     def check(self):
+        print(self)
         if (self.database.belongs(self.nameRelation)):
-            self.description.parse(self.database.describe(self.nameRelation))
+            self.description = self.database.get_description(self.nameRelation)
             return True
         else:
+            print("n")
             return False
 
     def translate(self):
@@ -152,11 +157,19 @@ class Selection(Operation):
 
         self.description = self.elements[0].getDescription()
 
+        print(self.elements[0])
+        print(self.description)
+
         if not self.description.isColumnName(self.attribut):
             return False
 
+        print("Testm")
+
         if self.cst:
-            return self.description.getColumnType(self.attribut) is type(self.other)
+            if self.description.getColumnType(self.attribut) is type(self.other):
+                return True
+            else:
+                raise InvalidTypesException()
         else:
             return self.description.isColumnName(self.other)
 

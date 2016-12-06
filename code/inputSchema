@@ -1,4 +1,5 @@
-y
-Test
-Proj(["Name"], Rel("Cities"))
+n
+"Chips", ("Marque", "str", False), ("Gout", "str", False), ("Vendus", "int", False)
+
+Proj(["Marque"], Select(Eq("Vendus", Cst(50)), Rel("Chips"))
 

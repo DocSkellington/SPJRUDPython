@@ -1,4 +1,0 @@
-n
-"Cities", ("Name", "str", False), ("Country", "str", False)
-Proj(["Name"], Rel("Cities"))
-

@@ -1,5 +1,6 @@
 import sqlite3
 import Description
+import copy
 
 class MissingDatabaseException(Exception):
     """ Handles the case where the user tries to use a command on a database when no database is loaded"""
@@ -51,6 +52,7 @@ class Database(object):
         if table in self.descriptions:
             raise DoubledTableException(table + " is already in the schema of the database")
         self.descriptions[table] = description
+        self.tables.append(table)
 
     def get_description(self, table):
         """ Returns the description corresponding to the given table name. If the table is not stored, an MissingTableException is thrown
@@ -59,7 +61,7 @@ class Database(object):
         """
         if table not in self.descriptions:
             raise MissingTableException(table + " is not a known table")
-        return self.descriptions[table]
+        return copy.deepcopy(self.descriptions[table])
 
     def execute(self, command):
         """ Executes a command """
@@ -96,7 +98,6 @@ class Database(object):
 
     def belongs(self, table):
         """ Does the table belong to the database ? """
-        if self.conn != None:
-            return (table,) in self.tables
-        else:
-            raise MissingDatabaseException()
+        print(table)
+        print(self.tables)
+        return table in self.tables

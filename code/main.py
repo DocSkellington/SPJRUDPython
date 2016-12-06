@@ -65,6 +65,7 @@ def decomposition(request, pieces):
                     # A space is considered as a part of the string we are working on
                     curName += request[i]
         i += 1
+    return i
 
     if curName != "":
         if inStr:
@@ -78,6 +79,7 @@ def build_AST(decomposition, database):
         decomposition (list of str): The result of the decomposition function (or a subpart of it)
         database (Database.Database): The database we want to use
     """
+    print(decomposition)
     if decomposition[0] == "Select":
         # Searching the comparator
         comparator = None
@@ -93,8 +95,17 @@ def build_AST(decomposition, database):
             raise InvalidKeywordException(decomposition[1][0] + " is not a valid comparator")
         # Is it a constant?
         const = (decomposition[1][1][1] == 'Cst')
+        other = decomposition[1][1][2][0]
+        try:
+            other = int(other)
+            print(other)
+        except ValueError:
+            try:
+                other = float(other)
+            except ValueError:
+                other = other
         # We give the column name, the comparator, the constant/column name to compare, if it is a constant and the sub operation
-        return Operations.Selection(decomposition[1][1][0], comparator, decomposition[1][1][2][0], const, build_AST(decomposition[1][2:], database))
+        return Operations.Selection(decomposition[1][1][0], comparator, other, const, build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
             raise InvalidParameterException("You must provide at least one column to Project")
@@ -157,7 +168,10 @@ else:
     print("Please type the schema of a table as following: Name, (ColumnName, the type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
     res = input()
     while res != '':
-        parse_schema(res, db)
+        try:
+            parse_schema(res, db)
+        except TypeError:
+            print("Your schema does not correspond to our exigences. Please correct it")
         print(db)
         res = input()
 print("Please insert your SPJRUD request.")
