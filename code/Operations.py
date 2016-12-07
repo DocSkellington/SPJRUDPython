@@ -4,6 +4,7 @@ import Description
 import copy
 
 class InvalidTypesComparaisonException(Exception):
+    """ Handles the case where the user wants to compare two columns (or one column and a constant) of two different types """
     pass
 
 class Operation(abc.ABC):
@@ -49,6 +50,8 @@ class Relation(Operation):
         pass
 
 class Rename(Operation):
+    """ Defines a Rename operation
+    """
     def __init__(self, name, newName, operation):
         super().__init__()
         self.name = name
@@ -66,7 +69,7 @@ class Rename(Operation):
         self.description = self.elements[0].getDescription()
 
         try:
-            self.description.changeColumnName(self.name, self.newName)
+            self.description.change_column_name(self.name, self.newName)
             return True
         except Description.InvalidColumnNameException:
             return False
@@ -75,6 +78,8 @@ class Rename(Operation):
         pass
 
 class Projection(Operation):
+    """ Defines a Projection operation
+    """
     def __init__(self, columns, operation):
         super().__init__()
         self.columns = columns
@@ -91,10 +96,10 @@ class Projection(Operation):
         self.description = self.elements[0].getDescription()
 
         for column in self.columns:
-            if not self.description.isColumnName(column):
+            if not self.description.is_column_name(column):
                 return False
 
-        self.description.keepColumns(self.columns)
+        self.description.keep_columns(self.columns)
         return True
 
     def translate(self):
@@ -150,6 +155,8 @@ class LesserEqual(Comparator):
         return str(self)
 
 class Selection(Operation):
+    """ Defines a Selection operation
+    """
     def __init__(self, attribut, comparator, other, cst, operation):
         """ cst est un boolena. other est l'autre partie de la comparaison """
         super().__init__()
@@ -169,8 +176,8 @@ class Selection(Operation):
 
         self.description = self.elements[0].getDescription()
 
-        if not self.description.isColumnName(self.attribut):
-            return False
+        if not self.description.is_column_name(self.attribut):
+            raise Description.InvalidColumnNameException(self.attribut + " is not a name of a column in the schema")
 
         if self.cst:
             if self.description.get_column_type(self.attribut) is type(self.other):
@@ -178,13 +185,13 @@ class Selection(Operation):
             else:
                 raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.other))
         else:
-            if self.description.isColumnName(self.other):
+            if self.description.is_column_name(self.other):
                 if self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
                     return True
                 else:
                     raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.description.get_column_type(self.other)))
             else:
-                raise InvalidComparaisonException("Impossible to compare " + self.attribut + " and " + self.other)
+                raise Description.InvalidColumnNameException(self.other + " is not a column of the table")
 
     def translate(self):
         pass

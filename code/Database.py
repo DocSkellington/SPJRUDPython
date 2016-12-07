@@ -7,9 +7,11 @@ class MissingDatabaseException(Exception):
     pass
 
 class DoubledTableException(Exception):
+    """ Handles the case where the user wants to add the description of a table already in the database """
     pass
 
 class MissingTableException(Exception):
+    """ Handles the case where we try to access a table missing in the database """
     pass
 
 class Database(object):

@@ -1,12 +1,15 @@
 import copy
 
 class InvalidColumnNameException(Exception):
+    """ Handles the case where the column name does not exist """
     pass
 
 class DoubleColumnNameException(Exception):
+    """ Handles the case where the column is already in the schema """
     pass
 
 class InvalidTypeException(Exception):
+    """ Handles the case where the type is not recognised """
     pass
 
 def convert_type(SQLType):
@@ -55,24 +58,24 @@ class Description(object):
             self.canNull[i[1]] = (i[3] == 0)
             self.types[i[1]] = convert_type(i[2])
 
-    def getColumnNames(self):
+    def get_column_names(self):
         """ Returns a list with the names of the columns """
         return copy.deepcopy(self.columns)
 
-    def isColumnName(self, name):
+    def is_column_name(self, name):
         """ Returns true if the name is in the list of columns' names
         Args:
             name (str): The name we want to check
         """
         return name in self.columns
 
-    def changeColumnName(self, name, newName):
+    def change_column_name(self, name, newName):
         """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, InvalidColumnNameException is raised
         Args:
             name (str): The name we want to change
             newName (str): The name we want to use
         """
-        if not self.isColumnName(name) or self.isColumnName(newName):
+        if not self.is_column_name(name) or self.is_column_name(newName):
             raise InvalidColumnNameException(name + " is not a column name")
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
@@ -84,11 +87,11 @@ class Description(object):
         Args:
             name (str): The name of the column
         """
-        if not self.isColumnName(name):
+        if not self.is_column_name(name):
             raise InvalidColumnNameException(name + " is not a column name")
         return self.types[name]
 
-    def keepColumns(self, names):
+    def keep_columns(self, names):
         """ Keeps only the columns whose name is in the given list
         Args:
             names (list of str): The names of the columns we want to keep
@@ -108,7 +111,7 @@ class Description(object):
         self.types = types
 
 
-    def addColumn(self, name, vartype, canNull):
+    def add_column(self, name, vartype, canNull):
         """ Adds a column into the description. The column is defined by a name, a vartype and if it can contain NULL
             The schema cannot contain multiple columns with the same name
         Args:
@@ -116,17 +119,17 @@ class Description(object):
             vartype (type): The type of the column (in Python type)
             canNull (boolean): Whether the column can contain NULL or not
         """
-        if self.isColumnName(name):
+        if self.is_column_name(name):
             raise DoubleColumnNameException(name + " is already in the schema")
         self.columns.append(name)
         self.canNull[name] = canNull
         self.types[name] = vartype
 
-    def canBeNull(self, name):
+    def can_be_null(self, name):
         """ Returns true if the values in the column with the name 'name' can be null, false otherwise
         Args:
             name (str): The name of a column
         """
-        if not self.isColumnName(name):
+        if not self.is_column_name(name):
             raise InvalidColumnNameException(name + " is not a column name")
         return self.canNull[name]

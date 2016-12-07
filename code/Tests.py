@@ -1,6 +1,7 @@
 import unittest
 import Database
 import Operations
+import Description
 
 class TestCheckOperations(unittest.TestCase):
     """ Unit tests on the check method of the operations """
@@ -33,7 +34,10 @@ class TestCheckOperations(unittest.TestCase):
         self.assertTrue(selection.check())
         selection = Operations.Selection("Name", Operations.Equal(), "Population", False, Operations.Relation("Cities", self.db))
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
-            self.assertFalse(selection.check())
+            selection.check()
+        selection = Operations.Selection("Name", Operations.Equal(), "Cities", False, Operations.Relation("Cities", self.db))
+        with self.assertRaises(Description.InvalidColumnNameException):
+            selection.check()
 
     def test_projection(self):
         """ Tests the projection """
