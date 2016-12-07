@@ -128,9 +128,23 @@ class Greater(Comparator):
     def translate(self):
         return str(self)
 
+class GreaterEqual(Comparator):
+    def __str__(self):
+        return ">="
+
+    def translate(self):
+        return str(self)
+
 class Lesser(Comparator):
     def __str__(self):
         return "<"
+
+    def translate(self):
+        return str(self)
+
+class LesserEqual(Comparator):
+    def __str__(self):
+        return "<="
 
     def translate(self):
         return str(self)

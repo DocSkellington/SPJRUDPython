@@ -88,8 +88,12 @@ def build_AST(decomposition, database):
             comparator = Operations.Different()
         elif decomposition[1][0] == "Gr":
             comparator = Operations.Greater()
+        elif decomposition[1][0] == "Geq":
+            comparator = Operations.GreaterEqual()
         elif decomposition[1][0] == "Le":
             comparator = Operations.Lesser()
+        elif decomposition[1][0] == "Leq":
+            comparator = Operations.LesserEqual()
         else:
             raise InvalidKeywordException(decomposition[1][0] + " is not a valid comparator")
         # Is it a constant?
