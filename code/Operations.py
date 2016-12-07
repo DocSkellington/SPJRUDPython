@@ -2,8 +2,9 @@ import abc
 import Database
 import Description
 import copy
+from Utilities import OperationException
 
-class InvalidTypesComparaisonException(Exception):
+class InvalidTypesComparaisonException(OperationException):
     """ Handles the case where the user wants to compare two columns (or one column and a constant) of two different types """
     pass
 
@@ -68,8 +69,13 @@ class Rename(Operation):
 
         self.description = self.elements[0].getDescription()
 
-        self.description.change_column_name(self.name, self.newName)
-        return True
+        try:
+            self.description.change_column_name(self.name, self.newName)
+            return True
+        except Description.DoubleColumnNameException as err:
+            raise Description.DoubleColumnNameException(err.columnName, err.description, "Rename: " + self.name + " to " + self.newName)
+        except Description.InvalidColumnNameException as err:
+            raise Description.InvalidColumnNameException(err.columnName, err.description, "Rename: " + self.name + " to " + self.newName)
 
     def translate(self):
         pass
@@ -174,7 +180,7 @@ class Selection(Operation):
         self.description = self.elements[0].getDescription()
 
         if not self.description.is_column_name(self.attribut):
-            raise Description.InvalidColumnNameException(self.attribut, self.description)
+            raise Description.InvalidColumnNameException(self.attribut, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
 
         if self.cst:
             if self.description.get_column_type(self.attribut) is type(self.other):
@@ -188,7 +194,7 @@ class Selection(Operation):
                 else:
                     raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.description.get_column_type(self.other)))
             else:
-                raise Description.InvalidColumnNameException(self.other, self.description)
+                raise Description.InvalidColumnNameException(self.other, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
 
     def translate(self):
         pass

@@ -65,6 +65,11 @@ class Database(object):
             raise MissingTableException(table + " is not a known table")
         return copy.deepcopy(self.descriptions[table])
 
+    def get_number_tables(self):
+        """ Returns the number of tables in this database
+        """
+        return len(self.tables)
+
     def execute(self, command):
         """ Executes a command """
         if self.conn != None:

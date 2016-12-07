@@ -1,21 +1,34 @@
 import copy
+from Utilities import OperationException
+from Utilities import ParserException
 
-class InvalidColumnNameException(Exception):
+class InvalidColumnNameException(OperationException):
     """ Handles the case where the column name does not exist """
-    def __init__(self, columnName, description):
+    def __init__(self, columnName, description, message):
         self.columnName = columnName
         self.description = description
+        self.message = message
 
     def __str__(self):
-        return self.columnName + " is not a column in the schema"
+        return "'" + self.message + "' is invalid because '" + self.columnName + "' is not a column in the schema.\nThe schema is the following:\n" + str(self.description)
 
-class DoubleColumnNameException(Exception):
+class DoubleColumnNameException(OperationException):
     """ Handles the case where the column is already in the schema """
-    pass
+    def __init__(self, columnName, description, message):
+        self.columnName = columnName
+        self.description = description
+        self.message = message
 
-class InvalidTypeException(Exception):
+    def __str__(self):
+        return "'" + self.message + "' is invalid because '" + self.columnName + "' is already defined in the schema.\nThe schema is the following:\n" + str(self.description)
+
+class InvalidTypeException(ParserException):
     """ Handles the case where the type is not recognised """
-    pass
+    def __init__(self, SQLType):
+        self.SQLType = SQLType
+
+    def __str__(self):
+        return self.SQLType + " is not a recognised SQL type"
 
 def convert_type(SQLType):
     """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float
@@ -32,7 +45,7 @@ def convert_type(SQLType):
     elif types[0] == 'INTEGER' or types[0] == 'BIGINT':
         return int
     else:
-        raise InvalidTypeException(type + "is an invalid type")
+        raise InvalidTypeException(types[0])
 
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
@@ -41,12 +54,16 @@ class Description(object):
         self.columns = []
         self.canNull = {}
         self.types = {}
+        self.sqlTypes = {}
 
     def __str__(self):
-        return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
+        res =  ""
+        for column in self.columns:
+            res += "\t" + column + " " + self.sqlTypes[column] + " " + str(self.canNull[column]) + "\n"
+        return res
 
     def __repr__(self):
-        return str(self)
+        return str(self.columns) + " " + str(self.canNull) + " " + str(self.types)
 
     def parse(self, describe):
         """ Reads the result of a describe request and puts the information into this structure
@@ -62,6 +79,7 @@ class Description(object):
             self.columns.append(i[1])
             self.canNull[i[1]] = (i[3] == 0)
             self.types[i[1]] = convert_type(i[2])
+            self.sqlTypes[i[1]] = i[2]
 
     def get_column_names(self):
         """ Returns a list with the names of the columns """
@@ -75,16 +93,26 @@ class Description(object):
         return name in self.columns
 
     def change_column_name(self, name, newName):
-        """ Changes the name of the corresponding column into the newName. If the column does not exist or if the new name already exists, InvalidColumnNameException is raised
+        """ Changes the name of the corresponding column into the newName. 
+            If the column does not exist, an InvalidColumnNameException is raised.
+            If the new name is already in the schema, a DoubleColumnNameException is raised.
         Args:
             name (str): The name we want to change
             newName (str): The name we want to use
         """
-        if not self.is_column_name(name) or self.is_column_name(newName):
-            raise InvalidColumnNameException(name, self)
+        if not self.is_column_name(name):
+            raise InvalidColumnNameException(name, self, "")
+        if self.is_column_name(newName):
+            raise DoubleColumnNameException(name, self, "")
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
                 self.columns[i] = newName
+                self.types[newName] = self.types[name]
+                self.sqlTypes[newName] = self.sqlTypes[name]
+                self.canNull[newName] = self.canNull[name]
+                del self.types[name]
+                del self.sqlTypes[name]
+                del self.canNull[name]
                 return
 
     def get_column_type(self, name):
@@ -121,14 +149,15 @@ class Description(object):
             The schema cannot contain multiple columns with the same name
         Args:
             name (str): The name of the column
-            vartype (type): The type of the column (in Python type)
+            vartype (type): The type of the column (in SQL type)
             canNull (boolean): Whether the column can contain NULL or not
         """
         if self.is_column_name(name):
-            raise DoubleColumnNameException(name + " is already in the schema")
+            raise DoubleColumnNameException(name, self)
         self.columns.append(name)
         self.canNull[name] = canNull
-        self.types[name] = vartype
+        self.types[name] = convert_type(vartype)
+        self.sqlTypes[name] = vartype
 
     def can_be_null(self, name):
         """ Returns true if the values in the column with the name 'name' can be null, false otherwise
@@ -138,3 +167,7 @@ class Description(object):
         if not self.is_column_name(name):
             raise InvalidColumnNameException(name, self)
         return self.canNull[name]
+
+    def get_number_columns(self):
+        """ Returns the number of columns in the schema. """
+        return len(self.columns)

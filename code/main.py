@@ -1,12 +1,58 @@
 import Operations
 import Database
 import Description
+from Utilities import OperationException
+from Utilities import ParserException
 
 class InvalidKeywordException(Exception):
     pass
 
 class InvalidRequestException(Exception):
     pass
+
+class InvalidParenthesisException(ParserException):
+    """ Defines the exception for wrong parenthesises/bracket """
+    def __init__(self, char, prev, needed, pos):
+        self.char = char
+        self.prev = prev
+        self.needed = needed
+        self.pos = pos
+
+    def __str__(self):
+        return self.prev + " requires a " + self.needed + " but you wrote a " + self.char + " at position " + str(self.pos)
+
+class MissingParenthesisException(ParserException):
+    """ Defines the exception for a missing parenthesis/bracket """
+    def __init__(self, char):
+        self.char = char
+
+    def __str__(self):
+        return "you opened a " + self.char + " but did not close it"
+
+class InvalidSchemaException(ParserException):
+    """ Defines the exception for an invalid schema """
+    pass
+
+def check_parenthesises(request):
+    """ Checks if the parenthesises (and brackets) are correct.
+    """
+    stack = []
+    other = False
+    for i in range(len(request)):
+        char = request[i]
+        if char == '(' or char == '[':
+            stack.append(char)
+        elif char == ')' or char == ']':
+            prev = stack.pop()
+            if prev == "(" and char != ")":
+                raise InvalidParenthesisException(char, prev, ')', i)
+            elif prev == "[" and char != "]":
+                raise InvalidParenthesisException(char, prev, ']', i)
+        else:
+            other = True
+    if len(stack) != 0:
+        raise MissingParenthesisException(stack.pop())
+    return other
 
 def decomposition(request, pieces):
     """ Parses a SPJRUD request and return a list with the keywords.
@@ -138,6 +184,8 @@ def parser(database, request):
         database (Database.Database): The database we want to use (it must already be connected)
         request (str): The SPJRUD request
     """
+    if check_parenthesises(request) == 0:
+        raise InvalidSchemaException("you cannot create an empty request")
     decompo = []
     # We decompose the request into a list we can use
     decomposition(request, decompo)
@@ -150,15 +198,15 @@ def parse_schema(schema, database):
         schema (str): The string the user typed with the schema he wants to use
         database (Database.Database): The database to use
     """
+    if check_parenthesises(schema) == 0:
+        raise InvalidSchemaException("you can not have an empty schema")
     decompo = []
     decomposition(schema, decompo)
-    print(decompo)
     description = Description.Description()
     name = decompo[0]
     for column in decompo[1:]:
-        print(column)
         if len(column) >= 3:
-            description.addColumn(column[0], Description.convert_type(column[1]), column[len(column)-1])
+            description.add_column(column[0], column[1], column[len(column)-1])
     database.add_description(name, description)
 
 
@@ -174,19 +222,35 @@ if res == 'y':
     database = input()
     db.connect_to_SQL(database + ".db")
 else:
-    print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
-    res = input()
-    while res != '':
-        try:
-            parse_schema(res, db)
-        except TypeError:
-            print("Your schema does not correspond to our exigences. Please correct it")
-        print(db)
+    while db.get_number_tables() == 0:
+        print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
         res = input()
-print("Please insert your SPJRUD request.")
-request = input()
-ast = parser(db, request)
-if ast.check():
-    print("ok")
-else:
-    print("nok")
+        while res != '':
+            try:
+                parse_schema(res, db)
+            except ParserException as err:
+                print("ERROR: Your schema does not correspond to our exigences because " + str(err) + ". Please correct it")
+            res = input()
+        if db.get_number_tables() == 0:
+            print("ERROR: Your database must contain at least 1 table.")
+
+ok = False
+while not ok:
+    print("Please insert your SPJRUD request.")
+    request = input()
+
+    ast = None
+    try:
+        ast = parser(db, request)
+        ok = True
+    except ParserException as err:
+        print("ERROR: You did not write the request correctly because " + str(err) + ".")
+
+try:
+    ast.check()
+    print("You request was correct")
+except OperationException as err:
+    print("ERROR: The expression:")
+    print("\t" + request)
+    print("is invalid because:")
+    print(str(err))
