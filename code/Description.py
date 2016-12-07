@@ -6,6 +6,26 @@ class InvalidColumnNameException(Exception):
 class DoubleColumnNameException(Exception):
     pass
 
+class InvalidTypeException(Exception):
+    pass
+
+def convert_type(SQLType):
+    """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float
+    Args:
+        SQLType (str): a string that contains an SQL VARTYPE
+    """
+
+    #What do we do with DATE, TIME, TIMESTAMP, INTERVAL, ARRAY, MULTISET, XML?
+    types = SQLType.split('(')
+    if types[0] == 'VARCHAR' or types[0] == 'CHAR' or types[0] == 'CHARACTER' or types[0] == 'BINARY' or types[0] == 'VARBINARY':
+        return str
+    elif types[0] == 'DECIMAL' or types[0] == 'NUMERIC' or types[0] == 'FLOAT' or types[0] == 'DOUBLE PRECISION':
+        return float
+    elif types[0] == 'INTEGER' or types[0] == 'BIGINT':
+        return int
+    else:
+        raise InvalidTypeException(type + "is an invalid type")
+
 class Description(object):
     """ Defines the description of a relation (columns, types,...) """
 
@@ -20,21 +40,6 @@ class Description(object):
     def __repr__(self):
         return str(self)
 
-    def convert_type(self, SQLType):
-        """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float
-        Args:
-            SQLType (str): a string that contains an SQL VARTYPE
-        """
-
-        #What do we do with DATE, TIME, TIMESTAMP, INTERVAL, ARRAY, MULTISET, XML?
-        types = SQLType.split('(')
-        if types[0] == 'VARCHAR' or types[0] == 'CHAR' or types[0] == 'CHARACTER' or types[0] == 'BINARY' or types[0] == 'VARBINARY':
-            return str
-        elif types[0] == 'DECIMAL' or types[0] == 'NUMERIC' or types[0] == 'FLOAT' or types[0] == 'DOUBLE PRECISION':
-            return float
-        elif types[0] == 'INTEGER' or types[0] == 'BIGINT':
-            return int
-
     def parse(self, describe):
         """ Reads the result of a describe request and puts the information into this structure
         Args:
@@ -48,7 +53,7 @@ class Description(object):
         for i in describe:
             self.columns.append(i[1])
             self.canNull[i[1]] = (i[3] == 0)
-            self.types[i[1]] = self.convert_type(i[2])
+            self.types[i[1]] = convert_type(i[2])
 
     def getColumnNames(self):
         """ Returns a list with the names of the columns """
@@ -74,7 +79,7 @@ class Description(object):
                 self.columns[i] = newName
                 return
 
-    def getColumnType(self, name):
+    def get_column_type(self, name):
         """ Return the type that the column 'name' supports (Integer, Text,...)
         Args:
             name (str): The name of the column

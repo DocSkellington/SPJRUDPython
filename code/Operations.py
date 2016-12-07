@@ -3,7 +3,7 @@ import Database
 import Description
 import copy
 
-class InvalidTypesException(Exception):
+class InvalidTypesComparaisonException(Exception):
     pass
 
 class Operation(abc.ABC):
@@ -39,12 +39,10 @@ class Relation(Operation):
         return "Relation: " + self.nameRelation + " " + str(self.database) + " " + repr(self.elements)
 
     def check(self):
-        print(self)
         if (self.database.belongs(self.nameRelation)):
             self.description = self.database.get_description(self.nameRelation)
             return True
         else:
-            print("n")
             return False
 
     def translate(self):
@@ -157,21 +155,22 @@ class Selection(Operation):
 
         self.description = self.elements[0].getDescription()
 
-        print(self.elements[0])
-        print(self.description)
-
         if not self.description.isColumnName(self.attribut):
             return False
 
-        print("Testm")
-
         if self.cst:
-            if self.description.getColumnType(self.attribut) is type(self.other):
+            if self.description.get_column_type(self.attribut) is type(self.other):
                 return True
             else:
-                raise InvalidTypesException()
+                raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.other))
         else:
-            return self.description.isColumnName(self.other)
+            if self.description.isColumnName(self.other):
+                if self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
+                    return True
+                else:
+                    raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.description.get_column_type(self.other)))
+            else:
+                raise InvalidComparaisonException("Impossible to compare " + self.attribut + " and " + self.other)
 
     def translate(self):
         pass

@@ -79,7 +79,6 @@ def build_AST(decomposition, database):
         decomposition (list of str): The result of the decomposition function (or a subpart of it)
         database (Database.Database): The database we want to use
     """
-    print(decomposition)
     if decomposition[0] == "Select":
         # Searching the comparator
         comparator = None
@@ -94,11 +93,16 @@ def build_AST(decomposition, database):
         else:
             raise InvalidKeywordException(decomposition[1][0] + " is not a valid comparator")
         # Is it a constant?
-        const = (decomposition[1][1][1] == 'Cst')
+        const = False
+        if decomposition[1][1][1] == 'Cst':
+            const = True
+        elif decomposition[1][1][1] == 'Column':
+            const = False
+        else:
+            raise InvalidKeywordException(decomposition[1][1][1] + " is not a valid type of data for the selection")
         other = decomposition[1][1][2][0]
         try:
             other = int(other)
-            print(other)
         except ValueError:
             try:
                 other = float(other)
@@ -144,12 +148,13 @@ def parse_schema(schema, database):
     """
     decompo = []
     decomposition(schema, decompo)
-    #print(decompo)
+    print(decompo)
     description = Description.Description()
     name = decompo[0]
     for column in decompo[1:]:
-        if len(column) == 3:
-            description.addColumn(column[0], column[1], column[2])
+        print(column)
+        if len(column) >= 3:
+            description.addColumn(column[0], Description.convert_type(column[1]), column[len(column)-1])
     database.add_description(name, description)
 
 
@@ -165,7 +170,7 @@ if res == 'y':
     database = input()
     db.connect_to_SQL(database + ".db")
 else:
-    print("Please type the schema of a table as following: Name, (ColumnName, the type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
+    print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
     res = input()
     while res != '':
         try:

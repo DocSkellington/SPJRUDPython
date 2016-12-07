@@ -1,4 +1,3 @@
 y
 Test
-Proj(["Name"], Rel("Cities"))
-
+Proj(["Name"], Select(Eq("Population", Cst("454")), Rel("Cities"))

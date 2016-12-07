@@ -35,12 +35,12 @@ class Database(object):
             self.conn = sqlite3.connect(DB)
             self.c = self.conn.cursor()
             self.c.execute("SELECT name FROM sqlite_master WHERE type='table'")
-            self.tables = self.c.fetchall()
-            for table in self.tables:
+            tables = self.c.fetchall()
+            for table in tables:
                 desc = self.describe(table[0])
                 description = Description.Description()
                 description.parse(desc)
-                self.add_description(table, description)
+                self.add_description(table[0], description)
 
     def add_description(self, table, description):
         """ Adds a description in the database schema.
@@ -98,6 +98,5 @@ class Database(object):
 
     def belongs(self, table):
         """ Does the table belong to the database ? """
-        print(table)
-        print(self.tables)
         return table in self.tables
+

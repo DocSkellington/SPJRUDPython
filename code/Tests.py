@@ -23,6 +23,17 @@ class TestCheckOperations(unittest.TestCase):
         selection = Operations.Selection("Paris", Operations.Equal(), 'Name', True, Operations.Relation("Cities", self.db))
         self.assertFalse(selection.check())
         selection = Operations.Selection("Name", Operations.Equal(), "Paris", True, Operations.Relation("Citjie", self.db))
+        self.assertFalse(selection.check())
+        selection = Operations.Selection("Population", Operations.Equal(), 256461, True, Operations.Relation("Cities", self.db))
+        self.assertTrue(selection.check())
+        selection = Operations.Selection("Population", Operations.Equal(), "256461", True, Operations.Relation("Cities", self.db))
+        with self.assertRaises(Operations.InvalidTypesComparaisonException):
+            selection.check()
+        selection = Operations.Selection("Name", Operations.Equal(), "Country", False, Operations.Relation("Cities", self.db))
+        self.assertTrue(selection.check())
+        selection = Operations.Selection("Name", Operations.Equal(), "Population", False, Operations.Relation("Cities", self.db))
+        with self.assertRaises(Operations.InvalidTypesComparaisonException):
+            self.assertFalse(selection.check())
 
     def test_projection(self):
         """ Tests the projection """
