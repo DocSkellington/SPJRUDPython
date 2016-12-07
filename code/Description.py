@@ -2,7 +2,12 @@ import copy
 
 class InvalidColumnNameException(Exception):
     """ Handles the case where the column name does not exist """
-    pass
+    def __init__(self, columnName, description):
+        self.columnName = columnName
+        self.description = description
+
+    def __str__(self):
+        return self.columnName + " is not a column in the schema"
 
 class DoubleColumnNameException(Exception):
     """ Handles the case where the column is already in the schema """
@@ -76,7 +81,7 @@ class Description(object):
             newName (str): The name we want to use
         """
         if not self.is_column_name(name) or self.is_column_name(newName):
-            raise InvalidColumnNameException(name + " is not a column name")
+            raise InvalidColumnNameException(name, self)
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
                 self.columns[i] = newName
@@ -88,7 +93,7 @@ class Description(object):
             name (str): The name of the column
         """
         if not self.is_column_name(name):
-            raise InvalidColumnNameException(name + " is not a column name")
+            raise InvalidColumnNameException(name, self)
         return self.types[name]
 
     def keep_columns(self, names):
@@ -131,5 +136,5 @@ class Description(object):
             name (str): The name of a column
         """
         if not self.is_column_name(name):
-            raise InvalidColumnNameException(name + " is not a column name")
+            raise InvalidColumnNameException(name, self)
         return self.canNull[name]

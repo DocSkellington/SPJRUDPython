@@ -68,11 +68,8 @@ class Rename(Operation):
 
         self.description = self.elements[0].getDescription()
 
-        try:
-            self.description.change_column_name(self.name, self.newName)
-            return True
-        except Description.InvalidColumnNameException:
-            return False
+        self.description.change_column_name(self.name, self.newName)
+        return True
 
     def translate(self):
         pass
@@ -177,7 +174,7 @@ class Selection(Operation):
         self.description = self.elements[0].getDescription()
 
         if not self.description.is_column_name(self.attribut):
-            raise Description.InvalidColumnNameException(self.attribut + " is not a name of a column in the schema")
+            raise Description.InvalidColumnNameException(self.attribut, self.description)
 
         if self.cst:
             if self.description.get_column_type(self.attribut) is type(self.other):
@@ -191,7 +188,7 @@ class Selection(Operation):
                 else:
                     raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.description.get_column_type(self.other)))
             else:
-                raise Description.InvalidColumnNameException(self.other + " is not a column of the table")
+                raise Description.InvalidColumnNameException(self.other, self.description)
 
     def translate(self):
         pass

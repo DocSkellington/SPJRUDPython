@@ -22,7 +22,8 @@ class TestCheckOperations(unittest.TestCase):
         selection = Operations.Selection("Name", Operations.Equal(), 'Paris', True, Operations.Relation("Cities", self.db))
         self.assertTrue(selection.check())
         selection = Operations.Selection("Paris", Operations.Equal(), 'Name', True, Operations.Relation("Cities", self.db))
-        self.assertFalse(selection.check())
+        with self.assertRaises(Description.InvalidColumnNameException):
+            selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Paris", True, Operations.Relation("Citjie", self.db))
         self.assertFalse(selection.check())
         selection = Operations.Selection("Population", Operations.Equal(), 256461, True, Operations.Relation("Cities", self.db))
@@ -57,7 +58,8 @@ class TestCheckOperations(unittest.TestCase):
         rename = Operations.Rename("Name", "City", Operations.Relation("Cities", self.db))
         self.assertTrue(rename.check())
         rename = Operations.Rename("City", "Name", Operations.Relation("Cities", self.db))
-        self.assertFalse(rename.check())
+        with self.assertRaises(Description.InvalidColumnNameException):
+            rename.check()
         rename = Operations.Rename("Name", "City", Operations.Relation("Citiejikq", self.db))
         self.assertFalse(rename.check())
 
