@@ -1,0 +1,14 @@
+Select(Eq("Name", Cst("Paris")), Rel("Cities"))
+->
+SELECT * FROM Cities WHERE Name=Paris
+
+Proj(["Name]", ...)
+SELECT Name FROM Cities WHERE Name=Paris
+
+
+Remplacer * par toutes les valeurs ?
+
+Pour le rename: employer alias
+Pour join: faire attention à faire une équi-jonction !
+Difference: EXCEPT (pourquoi respecter la syntaxe de SQL quand on peut faire n'importe quoi ?)
+Union: UNION

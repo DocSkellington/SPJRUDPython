@@ -1,34 +1,5 @@
 import copy
-from Utilities import OperationException
-from Utilities import ParserException
-
-class InvalidColumnNameException(OperationException):
-    """ Handles the case where the column name does not exist """
-    def __init__(self, columnName, description, message):
-        self.columnName = columnName
-        self.description = description
-        self.message = message
-
-    def __str__(self):
-        return "'" + self.message + "' is invalid because '" + self.columnName + "' is not a column in the schema.\nThe schema is the following:\n" + str(self.description)
-
-class DoubleColumnNameException(OperationException):
-    """ Handles the case where the column is already in the schema """
-    def __init__(self, columnName, description, message):
-        self.columnName = columnName
-        self.description = description
-        self.message = message
-
-    def __str__(self):
-        return "'" + self.message + "' is invalid because '" + self.columnName + "' is already defined in the schema.\nThe schema is the following:\n" + str(self.description)
-
-class InvalidTypeException(ParserException):
-    """ Handles the case where the type is not recognised """
-    def __init__(self, SQLType):
-        self.SQLType = SQLType
-
-    def __str__(self):
-        return self.SQLType + " is not a recognised SQL type"
+from Exceptions import *
 
 def convert_type(SQLType):
     """ Converts a SQLType (VARCHAR, NULL, ...) into a Python type (str, None, ...). We consider DECIMAL, FLOAT and DOUBLE PRECISION as float

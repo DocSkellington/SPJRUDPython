@@ -2,11 +2,7 @@ import abc
 import Database
 import Description
 import copy
-from Utilities import OperationException
-
-class InvalidTypesComparaisonException(OperationException):
-    """ Handles the case where the user wants to compare two columns (or one column and a constant) of two different types """
-    pass
+from Exceptions import *
 
 class Operation(abc.ABC):
     """ Defines the common attributs of the operations
@@ -45,7 +41,7 @@ class Relation(Operation):
             self.description = self.database.get_description(self.nameRelation)
             return True
         else:
-            return False
+            raise MissingTableException(self.nameRelation, self.database)
 
     def translate(self):
         pass
@@ -100,7 +96,10 @@ class Projection(Operation):
 
         for column in self.columns:
             if not self.description.is_column_name(column):
-                return False
+                message = "Projection: ["
+                for col in self.columns:
+                    message += "'" + col + "'"
+                raise InvalidColumnNameException(column, self.description, message)
 
         self.description.keep_columns(self.columns)
         return True
@@ -186,13 +185,13 @@ class Selection(Operation):
             if self.description.get_column_type(self.attribut) is type(self.other):
                 return True
             else:
-                raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.other))
+                raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.other), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
         else:
             if self.description.is_column_name(self.other):
                 if self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
                     return True
                 else:
-                    raise InvalidTypesComparaisonException("Impossible to compare a " + str(self.description.get_column_type(self.attribut)) + " and a " + str(self.description.get_column_type(self.other)))
+                    raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.description.get_column_type(self.other)), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
             else:
                 raise Description.InvalidColumnNameException(self.other, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
 

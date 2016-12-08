@@ -1,5 +1,4 @@
 n
-"Chips", ("Marque", "str", False), ("Gout", "str", False), ("Vendus", "int", False)
+Cities, (Name, VARCHAR(25), False)
 
-Proj(["Marque"], Select(Eq("Vendus", Cst(50)), Rel("Chips"))
-
+Rel("cojc")

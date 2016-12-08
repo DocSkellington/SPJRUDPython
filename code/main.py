@@ -1,37 +1,7 @@
 import Operations
 import Database
 import Description
-from Utilities import OperationException
-from Utilities import ParserException
-
-class InvalidKeywordException(Exception):
-    pass
-
-class InvalidRequestException(Exception):
-    pass
-
-class InvalidParenthesisException(ParserException):
-    """ Defines the exception for wrong parenthesises/bracket """
-    def __init__(self, char, prev, needed, pos):
-        self.char = char
-        self.prev = prev
-        self.needed = needed
-        self.pos = pos
-
-    def __str__(self):
-        return self.prev + " requires a " + self.needed + " but you wrote a " + self.char + " at position " + str(self.pos)
-
-class MissingParenthesisException(ParserException):
-    """ Defines the exception for a missing parenthesis/bracket """
-    def __init__(self, char):
-        self.char = char
-
-    def __str__(self):
-        return "you opened a " + self.char + " but did not close it"
-
-class InvalidSchemaException(ParserException):
-    """ Defines the exception for an invalid schema """
-    pass
+from Exceptions import *
 
 def check_parenthesises(request):
     """ Checks if the parenthesises (and brackets) are correct.
@@ -141,15 +111,15 @@ def build_AST(decomposition, database):
         elif decomposition[1][0] == "Leq":
             comparator = Operations.LesserEqual()
         else:
-            raise InvalidKeywordException(decomposition[1][0] + " is not a valid comparator")
+            raise InvalidKeywordException(decomposition[1][0], "comparator")
         # Is it a constant?
         const = False
         if decomposition[1][1][1] == 'Cst':
             const = True
-        elif decomposition[1][1][1] == 'Column':
+        elif decomposition[1][1][1] == 'Col':
             const = False
         else:
-            raise InvalidKeywordException(decomposition[1][1][1] + " is not a valid type of data for the selection")
+            raise InvalidKeywordException(decomposition[1][1][1], "type of data for the selection")
         other = decomposition[1][1][2][0]
         try:
             other = int(other)
@@ -162,7 +132,7 @@ def build_AST(decomposition, database):
         return Operations.Selection(decomposition[1][1][0], comparator, other, const, build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
-            raise InvalidParameterException("You must provide at least one column to Project")
+            raise InvalidParameterException("at least one column" , "Project")
         return Operations.Projection(decomposition[1][0], build_AST(decomposition[1][1:], database))
     elif decomposition[0] == "Join":
         pass
@@ -176,7 +146,7 @@ def build_AST(decomposition, database):
     elif decomposition[0] == "Rel":
         return Operations.Relation(decomposition[1][0], database)
     else:
-        raise InvalidKeywordException(decomposition[0] + " is not a valid operation. Please refer to the manual.")
+        raise InvalidKeywordException(decomposition[0] + "operation. Please refer to the manual.")
 
 def parser(database, request):
     """ Parses the SPJRUD request and returns the corresponding AST
@@ -236,21 +206,29 @@ else:
 
 ok = False
 while not ok:
-    print("Please insert your SPJRUD request.")
+    print("Please insert your SPJRUD request. Enter an empty line to exit the application")
     request = input()
 
-    ast = None
-    try:
-        ast = parser(db, request)
+    if request == "":
         ok = True
-    except ParserException as err:
-        print("ERROR: You did not write the request correctly because " + str(err) + ".")
+    else:
+        ast = None
+        try:
+            ast = parser(db, request)
+            try:
+                ast.check()
+                ok = True
+                print("You request was correct")
+            except OperationException as err:
+                print("ERROR: The expression:")
+                print("\t" + request)
+                print("is invalid because:")
+                print(str(err))
+            except DatabaseException as err:
+                print("ERROR (Database): The expression:")
+                print("\t" + request)
+                print("is invalid because:")
+                print(str(err))
+        except ParserException as err:
+            print("ERROR: You did not write the request correctly because " + str(err) + ".")
 
-try:
-    ast.check()
-    print("You request was correct")
-except OperationException as err:
-    print("ERROR: The expression:")
-    print("\t" + request)
-    print("is invalid because:")
-    print(str(err))

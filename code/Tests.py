@@ -2,6 +2,7 @@ import unittest
 import Database
 import Operations
 import Description
+from Exceptions import *
 
 class TestCheckOperations(unittest.TestCase):
     """ Unit tests on the check method of the operations """
@@ -15,7 +16,8 @@ class TestCheckOperations(unittest.TestCase):
         rel = Operations.Relation("Cities", self.db)
         self.assertTrue(rel.check())
         rel = Operations.Relation("CitIes", self.db)
-        self.assertFalse(rel.check())
+        with self.assertRaises(MissingTableException):
+            rel.check()
 
     def test_selection(self):
         """ Tests the Selection """
@@ -25,7 +27,8 @@ class TestCheckOperations(unittest.TestCase):
         with self.assertRaises(Description.InvalidColumnNameException):
             selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Paris", True, Operations.Relation("Citjie", self.db))
-        self.assertFalse(selection.check())
+        with self.assertRaises(MissingTableException):
+            selection.check()
         selection = Operations.Selection("Population", Operations.Equal(), 256461, True, Operations.Relation("Cities", self.db))
         self.assertTrue(selection.check())
         selection = Operations.Selection("Population", Operations.Equal(), "256461", True, Operations.Relation("Cities", self.db))
@@ -47,11 +50,14 @@ class TestCheckOperations(unittest.TestCase):
         projection = Operations.Projection(["Name", "Country"], Operations.Relation("Cities", self.db))
         self.assertTrue(projection.check())
         projection = Operations.Projection(['Couname'], Operations.Relation("Cities", self.db))
-        self.assertFalse(projection.check())
+        with self.assertRaises(InvalidColumnNameException):
+            projection.check()
         projection = Operations.Projection(['Name', 'Countrygzu'], Operations.Relation("Cities", self.db))
-        self.assertFalse(projection.check())
+        with self.assertRaises(InvalidColumnNameException):
+            projection.check()
         projection = Operations.Projection(["Name"], Operations.Relation("Citoiej", self.db))
-        self.assertFalse(projection.check())
+        with self.assertRaises(MissingTableException):
+            projection.check()
 
     def test_rename(self):
         """ Tests the Rename """
@@ -61,7 +67,8 @@ class TestCheckOperations(unittest.TestCase):
         with self.assertRaises(Description.InvalidColumnNameException):
             rename.check()
         rename = Operations.Rename("Name", "City", Operations.Relation("Citiejikq", self.db))
-        self.assertFalse(rename.check())
+        with self.assertRaises(MissingTableException):
+            rename.check()
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,18 +1,7 @@
 import sqlite3
 import Description
 import copy
-
-class MissingDatabaseException(Exception):
-    """ Handles the case where the user tries to use a command on a database when no database is loaded"""
-    pass
-
-class DoubledTableException(Exception):
-    """ Handles the case where the user wants to add the description of a table already in the database """
-    pass
-
-class MissingTableException(Exception):
-    """ Handles the case where we try to access a table missing in the database """
-    pass
+from Exceptions import *
 
 class Database(object):
     """ Defines a database and its operations """

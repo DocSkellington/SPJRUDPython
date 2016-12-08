@@ -1,3 +1,4 @@
 y
 Test
-Select(Eq("N", Cst("Paris")), Rel("Cities"))
+Proj([], Rel("Cities"))
+
