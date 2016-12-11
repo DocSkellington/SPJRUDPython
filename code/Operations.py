@@ -3,6 +3,7 @@ import Database
 import Description
 import copy
 from Exceptions import *
+from SQLRequest import SQLRequest
 
 class Operation(abc.ABC):
     """ Defines the common attributs of the operations
@@ -18,7 +19,9 @@ class Operation(abc.ABC):
 
     @abc.abstractmethod
     def translate(self):
-        """ Translates the operation in SPJRUD into a SQL request """
+        """ Translates the operation in SPJRUD into a SQL request.
+        Returns a SQLRequest object
+        """
         pass
 
     def getDescription(self):
@@ -44,7 +47,12 @@ class Relation(Operation):
             raise MissingTableException(self.nameRelation, self.database)
 
     def translate(self):
-        pass
+        request = SQLRequest()
+        request.set_from_clause(self.nameRelation)
+        columns = self.description.get_column_names()
+        for column in columns:
+            request.add_column(column)
+        return request
 
 class Rename(Operation):
     """ Defines a Rename operation
@@ -105,7 +113,9 @@ class Projection(Operation):
         return True
 
     def translate(self):
-        pass
+        request = self.elements[0].translate()
+        request.keep_columns(self.columns)
+        return request
 
 class Comparator(abc.ABC):
     """ Defines a comparator used by the Selection/SELECT request """
@@ -196,4 +206,11 @@ class Selection(Operation):
                 raise Description.InvalidColumnNameException(self.other, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
 
     def translate(self):
-        pass
+        request = self.elements[0].translate()
+        condition = self.attribut + str(self.comparator)
+        if self.cst:
+            condition += "'" + self.other + "'"
+        else:
+            condition += self.other
+        request.add_condition(condition)
+        return request

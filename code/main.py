@@ -146,7 +146,7 @@ def build_AST(decomposition, database):
     elif decomposition[0] == "Rel":
         return Operations.Relation(decomposition[1][0], database)
     else:
-        raise InvalidKeywordException(decomposition[0] + "operation. Please refer to the manual.")
+        raise InvalidKeywordException(decomposition[0], "operation. Please refer to the manual.")
 
 def parser(database, request):
     """ Parses the SPJRUD request and returns the corresponding AST
@@ -218,7 +218,10 @@ while not ok:
             try:
                 ast.check()
                 ok = True
-                print("You request was correct")
+                print("You request was correct.")
+                request = ast.translate()
+                print("The SQL request corresponding to your SPJRUD request is:")
+                print(str(request))
             except OperationException as err:
                 print("ERROR: The expression:")
                 print("\t" + request)

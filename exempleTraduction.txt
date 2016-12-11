@@ -12,3 +12,4 @@ Pour le rename: employer alias
 Pour join: faire attention à faire une équi-jonction !
 Difference: EXCEPT (pourquoi respecter la syntaxe de SQL quand on peut faire n'importe quoi ?)
 Union: UNION
+Pour select et projection: comme check ok, on peut tout mettre dans une requête SQL
