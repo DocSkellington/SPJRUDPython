@@ -42,7 +42,6 @@ class Relation(Operation):
     def check(self):
         if (self.database.belongs(self.nameRelation)):
             self.description = self.database.get_description(self.nameRelation)
-            return True
         else:
             raise MissingTableException(self.nameRelation, self.database)
 
@@ -68,14 +67,12 @@ class Rename(Operation):
         return "Rename: " + self.name + " into " + self.newName + "; " + repr(self.elements)
 
     def check(self):
-        if not self.elements[0].check():
-            return False
+        self.elements[0].check()
 
         self.description = self.elements[0].get_description()
 
         try:
             self.description.change_column_name(self.name, self.newName)
-            return True
         except Description.DoubleColumnNameException as err:
             raise Description.DoubleColumnNameException(err.columnName, err.description, "Rename: " + self.name + " to " + self.newName)
         except Description.InvalidColumnNameException as err:
@@ -97,9 +94,7 @@ class Projection(Operation):
         return "Projection: " + str(self.columns) + " " + repr(self.elements)
 
     def check(self):
-        if not self.elements[0].check():
-            return False
-    
+        self.elements[0].check()
         self.description = self.elements[0].get_description()
 
         for column in self.columns:
@@ -147,8 +142,7 @@ class Selection(Operation):
         return "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other + " (" + str(self.cst) + ") " + repr(self.elements)
 
     def check(self):
-        if not self.elements[0].check():
-            return False
+        self.elements[0].check()
 
         self.description = self.elements[0].get_description()
 
@@ -156,15 +150,11 @@ class Selection(Operation):
             raise Description.InvalidColumnNameException(self.attribut, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
 
         if self.cst:
-            if self.description.get_column_type(self.attribut) is type(self.other):
-                return True
-            else:
+            if not self.description.get_column_type(self.attribut) is type(self.other):
                 raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.other), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
         else:
             if self.description.is_column_name(self.other):
-                if self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
-                    return True
-                else:
+                if not self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
                     raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.description.get_column_type(self.other)), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
             else:
                 raise Description.InvalidColumnNameException(self.other, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
@@ -187,8 +177,8 @@ class Union(Operation):
         self.elements.append(right)
 
     def check(self):
-        if not self.elements[0].check() or not self.elements[1].check():
-            return False
+        self.elements[0].check()
+        self.elements[1].check()
 
         left = self.elements[0].get_description()
         right = self.elements[1].get_description()

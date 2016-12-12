@@ -14,7 +14,7 @@ class TestCheckOperations(unittest.TestCase):
     def test_relation(self):
         """ Tests the Relation """
         rel = Operations.Relation("Cities", self.db)
-        self.assertTrue(rel.check())
+        rel.check()
         rel = Operations.Relation("CitIes", self.db)
         with self.assertRaises(MissingTableException):
             rel.check()
@@ -22,7 +22,7 @@ class TestCheckOperations(unittest.TestCase):
     def test_selection(self):
         """ Tests the Selection """
         selection = Operations.Selection("Name", Operations.Equal(), 'Paris', True, Operations.Relation("Cities", self.db))
-        self.assertTrue(selection.check())
+        selection.check()
         selection = Operations.Selection("Paris", Operations.Equal(), 'Name', True, Operations.Relation("Cities", self.db))
         with self.assertRaises(Description.InvalidColumnNameException):
             selection.check()
@@ -30,12 +30,12 @@ class TestCheckOperations(unittest.TestCase):
         with self.assertRaises(MissingTableException):
             selection.check()
         selection = Operations.Selection("Population", Operations.Equal(), 256461, True, Operations.Relation("Cities", self.db))
-        self.assertTrue(selection.check())
+        selection.check()
         selection = Operations.Selection("Population", Operations.Equal(), "256461", True, Operations.Relation("Cities", self.db))
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
             selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Country", False, Operations.Relation("Cities", self.db))
-        self.assertTrue(selection.check())
+        selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Population", False, Operations.Relation("Cities", self.db))
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
             selection.check()
@@ -46,9 +46,9 @@ class TestCheckOperations(unittest.TestCase):
     def test_projection(self):
         """ Tests the projection """
         projection = Operations.Projection(["Name"], Operations.Relation("Cities", self.db))
-        self.assertTrue(projection.check())
+        projection.check()
         projection = Operations.Projection(["Name", "Country"], Operations.Relation("Cities", self.db))
-        self.assertTrue(projection.check())
+        projection.check()
         projection = Operations.Projection(['Couname'], Operations.Relation("Cities", self.db))
         with self.assertRaises(InvalidColumnNameException):
             projection.check()
@@ -62,7 +62,7 @@ class TestCheckOperations(unittest.TestCase):
     def test_rename(self):
         """ Tests the Rename """
         rename = Operations.Rename("Name", "City", Operations.Relation("Cities", self.db))
-        self.assertTrue(rename.check())
+        rename.check()
         rename = Operations.Rename("City", "Name", Operations.Relation("Cities", self.db))
         with self.assertRaises(Description.InvalidColumnNameException):
             rename.check()
