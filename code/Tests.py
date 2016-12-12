@@ -70,5 +70,13 @@ class TestCheckOperations(unittest.TestCase):
         with self.assertRaises(MissingTableException):
             rename.check()
 
+    def test_union(self):
+        """ Tests the union """
+        union = Operations.Union(Operations.Relation("Cities", self.db), Operations.Relation("Cities", self.db))
+        union.check()
+        union = Operations.Union(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Name"], Operations.Relation("Cities", self.db)))
+        union.check()
+
+
 if __name__ == '__main__':
     unittest.main()

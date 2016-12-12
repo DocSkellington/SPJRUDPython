@@ -99,16 +99,21 @@ def build_AST(decomposition, database):
         # Searching the comparator
         comparator = None
         if decomposition[1][0] == "Eq":
-            comparator = Operations.Equal()
+            comp = "="
         elif decomposition[1][0] == "Di":
+            comp = "<>"
             comparator = Operations.Different()
         elif decomposition[1][0] == "Gr":
+            comp = "<"
             comparator = Operations.Greater()
         elif decomposition[1][0] == "Geq":
+            comp = "<="
             comparator = Operations.GreaterEqual()
         elif decomposition[1][0] == "Le":
+            comp = ">"
             comparator = Operations.Lesser()
         elif decomposition[1][0] == "Leq":
+            comp = ">="
             comparator = Operations.LesserEqual()
         else:
             raise InvalidKeywordException(decomposition[1][0], "comparator")
@@ -128,8 +133,9 @@ def build_AST(decomposition, database):
                 other = float(other)
             except ValueError:
                 other = other
+        comparator = Operations.Comparator(decomposition[1][1][0], comp, other)
         # We give the column name, the comparator, the constant/column name to compare, if it is a constant and the sub operation
-        return Operations.Selection(decomposition[1][1][0], comparator, other, const, build_AST(decomposition[1][2:], database))
+        return Operations.Selection(comparator, const, build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
             raise InvalidParameterException("at least one column" , "Project")
@@ -140,7 +146,7 @@ def build_AST(decomposition, database):
         # We give the name to replace, the new name to use and the operation to proceed next
         return Operations.Rename(decomposition[1][0], decomposition[1][1], build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Union":
-        pass
+        return Operations.Union(build_AST(decomposition[1][0:2], database), build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Diff":
         pass
     elif decomposition[0] == "Rel":

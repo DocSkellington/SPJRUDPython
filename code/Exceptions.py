@@ -37,6 +37,16 @@ class DoubleColumnNameException(OperationException):
     def __str__(self):
         return "'" + self.message + "' is invalid because '" + self.columnName + "' is already defined in the schema.\nThe schema is the following:\n" + str(self.description)
 
+class SorteNotMatchingException(OperationException):
+    """ Defines the exception where the descriptions have different sortes when they shouldn't"""
+    def __init__(self, columnsLeft, columnsRight, message):
+        self.columnsLeft = columnsLeft
+        self.columnsRight = columnsRight
+        self.message = message
+
+    def __str__(self):
+        return "'" + self.message + "' is invalid because '" + str(self.columnsLeft) + "' and '" + str(self.columnsRight) + "' don't have the same sorte."
+
 class DatabaseException(Error):
     """ Defines the exception used for the database error """
     pass

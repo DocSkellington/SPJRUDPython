@@ -24,7 +24,7 @@ class Operation(abc.ABC):
         """
         pass
 
-    def getDescription(self):
+    def get_description(self):
         """ Returns a deep copy of the description of this operation """
         return copy.deepcopy(self.description)
 
@@ -71,7 +71,7 @@ class Rename(Operation):
         if not self.elements[0].check():
             return False
 
-        self.description = self.elements[0].getDescription()
+        self.description = self.elements[0].get_description()
 
         try:
             self.description.change_column_name(self.name, self.newName)
@@ -100,7 +100,7 @@ class Projection(Operation):
         if not self.elements[0].check():
             return False
     
-        self.description = self.elements[0].getDescription()
+        self.description = self.elements[0].get_description()
 
         for column in self.columns:
             if not self.description.is_column_name(column):
@@ -110,61 +110,25 @@ class Projection(Operation):
                 raise InvalidColumnNameException(column, self.description, message)
 
         self.description.keep_columns(self.columns)
-        return True
 
     def translate(self):
         request = self.elements[0].translate()
         request.keep_columns(self.columns)
         return request
 
-class Comparator(abc.ABC):
+class Comparator(object):
     """ Defines a comparator used by the Selection/SELECT request """
-    @abc.abstractmethod
+    def __init__(self, left, comp, right):
+        self.left = left
+        self.comp = comp
+        self.right = right
+
+    def __str__(self):
+        return self.left + self.comp + self.right
+
     def translate(self):
         """ Translates the comparator in Select into a comparator used by a SELECT request """
-        pass
-
-class Equal(Comparator):
-    def __str__(self):
-        return "="
-
-    def translate(self):
-        return str(self)
-
-class Different(Comparator):
-    def __str__(self):
-        return "<>"
-
-    def translate(self):
-        return str(self)
-
-class Greater(Comparator):
-    def __str__(self):
-        return ">"
-
-    def translate(self):
-        return str(self)
-
-class GreaterEqual(Comparator):
-    def __str__(self):
-        return ">="
-
-    def translate(self):
-        return str(self)
-
-class Lesser(Comparator):
-    def __str__(self):
-        return "<"
-
-    def translate(self):
-        return str(self)
-
-class LesserEqual(Comparator):
-    def __str__(self):
-        return "<="
-
-    def translate(self):
-        return str(self)
+        return self.left + self.comp 
 
 class Selection(Operation):
     """ Defines a Selection operation
@@ -186,7 +150,7 @@ class Selection(Operation):
         if not self.elements[0].check():
             return False
 
-        self.description = self.elements[0].getDescription()
+        self.description = self.elements[0].get_description()
 
         if not self.description.is_column_name(self.attribut):
             raise Description.InvalidColumnNameException(self.attribut, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
@@ -214,3 +178,25 @@ class Selection(Operation):
             condition += self.other
         request.add_condition(condition)
         return request
+
+class Union(Operation):
+    """Defines a Union operation"""
+    def __init__(self, left, right):
+        super().__init__()
+        self.elements.append(left)
+        self.elements.append(right)
+
+    def check(self):
+        if not self.elements[0].check() or not self.elements[1].check():
+            return False
+
+        left = self.elements[0].get_description()
+        right = self.elements[1].get_description()
+
+        if not left.has_same_sorte(right):
+            raise SorteNoteMatchingException(self, left, right, str(self.elements[0]) + " Union " + str(self.elements[1]))
+
+        self.description = left
+
+    def translate(self):
+        pass

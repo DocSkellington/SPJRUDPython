@@ -142,3 +142,7 @@ class Description(object):
     def get_number_columns(self):
         """ Returns the number of columns in the schema. """
         return len(self.columns)
+
+    def has_same_sorte(self, other):
+        """ Checks that two descriptions have the same sorte """
+        return self.get_column_names() == other.get_column_names()
