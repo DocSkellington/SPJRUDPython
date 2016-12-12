@@ -110,7 +110,7 @@ class Description(object):
                 canNull[column] = self.canNull[column]
                 types[column] = self.types[column]
 
-        self.column = columns
+        self.columns = columns
         self.canNull = canNull
         self.types = types
 

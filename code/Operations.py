@@ -36,6 +36,9 @@ class Relation(Operation):
         self.nameRelation = nameRelation
         self.database = database
 
+    def __str__(self):
+        return "Relation: " + self.nameRelation
+
     def __repr__(self):
         return "Relation: " + self.nameRelation + " " + str(self.database) + " " + repr(self.elements)
 
@@ -47,7 +50,7 @@ class Relation(Operation):
 
     def translate(self):
         request = SQLRequest()
-        request.set_from_clause(self.nameRelation)
+        request.set_of_clause(self.nameRelation)
         columns = self.description.get_column_names()
         for column in columns:
             request.add_column(column)
@@ -62,6 +65,9 @@ class Rename(Operation):
         self.newName = newName
         self.elements = [operation]
         #print(repr(self))
+
+    def __str__(self):
+        return "Rename: " + self.name + " into " + self.newName + " of " + str(self.elements[0])
 
     def __repr__(self):
         return "Rename: " + self.name + " into " + self.newName + "; " + repr(self.elements)
@@ -89,6 +95,9 @@ class Projection(Operation):
         self.columns = columns
         self.elements = [operation]
         #print(repr(self))
+
+    def __str__(self):
+        return "Projection: " + str(self.columns) + " of " + str(self.elements[0])
 
     def __repr__(self):
         return "Projection: " + str(self.columns) + " " + repr(self.elements)
@@ -176,6 +185,9 @@ class Union(Operation):
         self.elements.append(left)
         self.elements.append(right)
 
+    def __str__(self):
+        return "Union: " + str(self.elements[0]) + " and " + str(self.elements[1])
+
     def check(self):
         self.elements[0].check()
         self.elements[1].check()
@@ -184,7 +196,7 @@ class Union(Operation):
         right = self.elements[1].get_description()
 
         if not left.has_same_sorte(right):
-            raise SorteNoteMatchingException(self, left, right, str(self.elements[0]) + " Union " + str(self.elements[1]))
+            raise SorteNotMatchingException(left, right, str(self))
 
         self.description = left
 

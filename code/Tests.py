@@ -24,7 +24,7 @@ class TestCheckOperations(unittest.TestCase):
         selection = Operations.Selection("Name", Operations.Equal(), 'Paris', True, Operations.Relation("Cities", self.db))
         selection.check()
         selection = Operations.Selection("Paris", Operations.Equal(), 'Name', True, Operations.Relation("Cities", self.db))
-        with self.assertRaises(Description.InvalidColumnNameException):
+        with self.assertRaises(InvalidColumnNameException):
             selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Paris", True, Operations.Relation("Citjie", self.db))
         with self.assertRaises(MissingTableException):
@@ -40,7 +40,7 @@ class TestCheckOperations(unittest.TestCase):
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
             selection.check()
         selection = Operations.Selection("Name", Operations.Equal(), "Cities", False, Operations.Relation("Cities", self.db))
-        with self.assertRaises(Description.InvalidColumnNameException):
+        with self.assertRaises(InvalidColumnNameException):
             selection.check()
 
     def test_projection(self):
@@ -64,7 +64,7 @@ class TestCheckOperations(unittest.TestCase):
         rename = Operations.Rename("Name", "City", Operations.Relation("Cities", self.db))
         rename.check()
         rename = Operations.Rename("City", "Name", Operations.Relation("Cities", self.db))
-        with self.assertRaises(Description.InvalidColumnNameException):
+        with self.assertRaises(InvalidColumnNameException):
             rename.check()
         rename = Operations.Rename("Name", "City", Operations.Relation("Citiejikq", self.db))
         with self.assertRaises(MissingTableException):
@@ -76,7 +76,9 @@ class TestCheckOperations(unittest.TestCase):
         union.check()
         union = Operations.Union(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Name"], Operations.Relation("Cities", self.db)))
         union.check()
-
+        union = Operations.Union(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Population"], Operations.Relation("Cities", self.db)))
+        with self.assertRaises(SorteNotMatchingException):
+            union.check()
 
 if __name__ == '__main__':
     unittest.main()
