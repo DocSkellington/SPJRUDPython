@@ -1,4 +1,4 @@
 n
-Cities, (Name, VARCHAR(25), False)
+R, ("A", INTEGER, False), ("B", INTEGER, False), ("C", INTEGER, False)
 
-Rel("cojc")
+Select(Eq(E, Cst("18")), Rename(A, E, Proj(["A", "B"], Rel("R"))))

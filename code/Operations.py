@@ -84,7 +84,9 @@ class Rename(Operation):
             raise Description.InvalidColumnNameException(err.columnName, err.description, "Rename: " + self.name + " to " + self.newName)
 
     def translate(self):
-        pass
+        request = self.elements[0].translate()
+        request.add_alias(self.name, self.newName)
+        return request
 
 class Projection(Operation):
     """ Defines a Projection operation
@@ -160,10 +162,6 @@ class Comparator(object):
             else:
                 raise Description.InvalidColumnNameException(self.right, description, "Selection: " + str(self))
 
-    def translate(self):
-        """ Translates the comparator in Select into a comparator used by a SELECT request """
-        return str(self)
-
 class Selection(Operation):
     """ Defines a Selection operation
     """
@@ -191,7 +189,7 @@ class Selection(Operation):
 
     def translate(self):
         request = self.elements[0].translate()
-        request.add_condition(self.comparator.translate())
+        request.add_condition(copy.deepcopy(self.comparator))
         return request
 
 class Union(Operation):

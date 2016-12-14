@@ -74,7 +74,7 @@ class Description(object):
         if not self.is_column_name(name):
             raise InvalidColumnNameException(name, self, "")
         if self.is_column_name(newName):
-            raise DoubleColumnNameException(name, self, "")
+            raise DoubleColumnNameException(newName, self, "")
         for i in range(0, len(self.columns)):
             if self.columns[i] == name:
                 self.columns[i] = newName
@@ -123,7 +123,6 @@ class Description(object):
             vartype (type): The type of the column (in SQL type)
             canNull (boolean): Whether the column can contain NULL or not
         """
-        print(name)
         if self.is_column_name(name):
             raise DoubleColumnNameException(name, self, "")
         self.columns.append(name)
