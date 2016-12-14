@@ -37,6 +37,10 @@ class DoubleColumnNameException(OperationException):
     def __str__(self):
         return "'" + self.message + "' is invalid because '" + self.columnName + "' is already defined in the schema.\nThe schema is the following:\n" + str(self.description)
 
+class DoubleColumnNameProjectionException(DoubleColumnNameException):
+    def __str__(self):
+        return "'" + self.message + "' is invalid because '" + self.columnName + "' is already defined in the list of columns to keep.\nThe columns are:\n" + str(self.description)
+
 class SorteNotMatchingException(OperationException):
     """ Defines the exception where the descriptions have different sortes when they shouldn't"""
     def __init__(self, columnsLeft, columnsRight, message):

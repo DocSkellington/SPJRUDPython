@@ -104,6 +104,11 @@ class Projection(Operation):
         self.elements[0].check()
         self.description = self.elements[0].get_description()
 
+        for i in range(0, len(self.columns)):
+            for j in range(i+1, len(self.columns)):
+                if self.columns[i] == self.columns[j]:
+                    raise DoubleColumnNameProjectionException(self.columns[i], self.columns, str(self))
+
         for column in self.columns:
             if not self.description.is_column_name(column):
                 message = "Projection: ["
