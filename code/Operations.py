@@ -50,7 +50,7 @@ class Relation(Operation):
 
     def translate(self):
         request = SQLRequest()
-        request.set_of_clause(self.nameRelation)
+        request.set_from_clause(self.nameRelation)
         columns = self.description.get_column_names()
         for column in columns:
             request.add_column(column)
@@ -64,7 +64,6 @@ class Rename(Operation):
         self.name = name
         self.newName = newName
         self.elements = [operation]
-        #print(repr(self))
 
     def __str__(self):
         return "Rename: " + self.name + " into " + self.newName + " of " + str(self.elements[0])
@@ -94,7 +93,6 @@ class Projection(Operation):
         super().__init__()
         self.columns = columns
         self.elements = [operation]
-        #print(repr(self))
 
     def __str__(self):
         return "Projection: " + str(self.columns) + " of " + str(self.elements[0])
@@ -122,60 +120,73 @@ class Projection(Operation):
 
 class Comparator(object):
     """ Defines a comparator used by the Selection/SELECT request """
-    def __init__(self, left, comp, right):
+    def __init__(self, left, comp, right, const):
         self.left = left
         self.comp = comp
         self.right = right
+        self.const = const
 
     def __str__(self):
-        return self.left + self.comp + self.right
+        res = self.left + " " + self.comp + " "
+        if self.const:
+            res += "'" + self.right + "'"
+        else:
+            res += self.right
+        return res
+
+    def __repr__(self):
+        return self.let + " " + self.comp + " " + self.right + " (" + self.const + ")"
+
+    def check(self, description):
+        """ Checks if the comparator is correct
+        Args:
+            description (Description.Description): The schema to use
+        """
+        if not description.is_column_name(self.left):
+            raise Description.InvalidColumnNameException(self.left, description, "Selection: " + str(self))
+
+        if self.const:
+            if not description.get_column_type(self.left) is type(self.right):
+                raise InvalidTypesComparaisonException(str(description.get_column_type(self.left)), str(self.right), "Select: " + str(self))
+        else:
+            if description.is_column_name(self.right):
+                if not description.get_column_type(self.left) is description.get_column_type(self.right):
+                    raise InvalidTypesComparaisonException(str(description.get_column_type(self.left)), str(description.get_column_type(self.right)), "Select: " + str(self))
+            else:
+                raise Description.InvalidColumnNameException(self.right, description, "Selection: " + str(self))
 
     def translate(self):
         """ Translates the comparator in Select into a comparator used by a SELECT request """
-        return self.left + self.comp 
+        return str(self)
 
 class Selection(Operation):
     """ Defines a Selection operation
     """
-    def __init__(self, attribut, comparator, other, cst, operation):
-        """ cst est un boolena. other est l'autre partie de la comparaison """
+    def __init__(self, comparator, operation):
+        """ Args:
+                comparator (Comparator): The comparator
+                operation (Operation): The operation
+        """
         super().__init__()
-        self.attribut = attribut
         self.comparator = comparator
-        self.other = other
-        self.cst = cst
         self.elements = [operation]
-        #print(repr(self))
+
+    def __str__(self):
+        return "Selection: " + str(self.comparator)
 
     def __repr__(self):
-        return "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other + " (" + str(self.cst) + ") " + repr(self.elements)
+        return "Selection: " + repr(self.comparator) + " "+ repr(self.elements)
 
     def check(self):
         self.elements[0].check()
 
         self.description = self.elements[0].get_description()
 
-        if not self.description.is_column_name(self.attribut):
-            raise Description.InvalidColumnNameException(self.attribut, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
-
-        if self.cst:
-            if not self.description.get_column_type(self.attribut) is type(self.other):
-                raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.other), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
-        else:
-            if self.description.is_column_name(self.other):
-                if not self.description.get_column_type(self.attribut) is self.description.get_column_type(self.other):
-                    raise InvalidTypesComparaisonException(str(self.description.get_column_type(self.attribut)), str(self.description.get_column_type(self.other)), "Select: " + self.attribut + " " + str(self.comparator) + " " + self.other)
-            else:
-                raise Description.InvalidColumnNameException(self.other, self.description, "Selection: " + self.attribut + " " + str(self.comparator) + " " + self.other)
+        self.comparator.check(self.description)
 
     def translate(self):
         request = self.elements[0].translate()
-        condition = self.attribut + str(self.comparator)
-        if self.cst:
-            condition += "'" + self.other + "'"
-        else:
-            condition += self.other
-        request.add_condition(condition)
+        request.add_condition(self.comparator.translate())
         return request
 
 class Union(Operation):

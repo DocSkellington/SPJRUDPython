@@ -21,25 +21,25 @@ class TestCheckOperations(unittest.TestCase):
 
     def test_selection(self):
         """ Tests the Selection """
-        selection = Operations.Selection("Name", Operations.Equal(), 'Paris', True, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Name", "=", 'Paris', True), Operations.Relation("Cities", self.db))
         selection.check()
-        selection = Operations.Selection("Paris", Operations.Equal(), 'Name', True, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Paris", '=', 'Name', True), Operations.Relation("Cities", self.db))
         with self.assertRaises(InvalidColumnNameException):
             selection.check()
-        selection = Operations.Selection("Name", Operations.Equal(), "Paris", True, Operations.Relation("Citjie", self.db))
+        selection = Operations.Selection(Operations.Comparator("Name", '=', "Paris", True), Operations.Relation("Citjie", self.db))
         with self.assertRaises(MissingTableException):
             selection.check()
-        selection = Operations.Selection("Population", Operations.Equal(), 256461, True, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Population", '=', 256461, True), Operations.Relation("Cities", self.db))
         selection.check()
-        selection = Operations.Selection("Population", Operations.Equal(), "256461", True, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Population", '=', "256461", True), Operations.Relation("Cities", self.db))
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
             selection.check()
-        selection = Operations.Selection("Name", Operations.Equal(), "Country", False, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Name", '=', "Country", False), Operations.Relation("Cities", self.db))
         selection.check()
-        selection = Operations.Selection("Name", Operations.Equal(), "Population", False, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Name", '=', "Population", False), Operations.Relation("Cities", self.db))
         with self.assertRaises(Operations.InvalidTypesComparaisonException):
             selection.check()
-        selection = Operations.Selection("Name", Operations.Equal(), "Cities", False, Operations.Relation("Cities", self.db))
+        selection = Operations.Selection(Operations.Comparator("Name", '=', "Cities", False), Operations.Relation("Cities", self.db))
         with self.assertRaises(InvalidColumnNameException):
             selection.check()
 

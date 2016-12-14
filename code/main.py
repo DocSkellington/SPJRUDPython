@@ -95,7 +95,6 @@ def build_AST(decomposition, database):
         decomposition (list of str): The result of the decomposition function (or a subpart of it)
         database (Database.Database): The database we want to use
     """
-    print(str(decomposition))
     if decomposition[0] == "Select":
         # Searching the comparator
         comparator = None
@@ -134,9 +133,9 @@ def build_AST(decomposition, database):
                 other = float(other)
             except ValueError:
                 other = other
-        comparator = Operations.Comparator(decomposition[1][1][0], comp, other)
+        comparator = Operations.Comparator(decomposition[1][1][0], comp, other, const)
         # We give the column name, the comparator, the constant/column name to compare, if it is a constant and the sub operation
-        return Operations.Selection(comparator, const, build_AST(decomposition[1][2:], database))
+        return Operations.Selection(comparator, build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Proj":
         if len(decomposition[1][0]) == 0:
             raise InvalidParameterException("at least one column" , "Project")
