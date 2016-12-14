@@ -127,15 +127,15 @@ class Comparator(object):
         self.const = const
 
     def __str__(self):
-        res = self.left + " " + self.comp + " "
+        res = self.left + self.comp
         if self.const:
-            res += "'" + self.right + "'"
+            res += "'" + str(self.right) + "'"
         else:
             res += self.right
         return res
 
     def __repr__(self):
-        return self.let + " " + self.comp + " " + self.right + " (" + self.const + ")"
+        return self.let + " " + self.comp + " " + str(self.right) + " (" + self.const + ")"
 
     def check(self, description):
         """ Checks if the comparator is correct
@@ -175,7 +175,7 @@ class Selection(Operation):
         return "Selection: " + str(self.comparator)
 
     def __repr__(self):
-        return "Selection: " + repr(self.comparator) + " "+ repr(self.elements)
+        return "Selection: " + repr(self.comparator) + " " + repr(self.elements)
 
     def check(self):
         self.elements[0].check()

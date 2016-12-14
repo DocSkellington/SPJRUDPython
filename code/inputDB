@@ -1,4 +1,4 @@
 y
 Test
-Select(Eq("Name", Cst("Paris")), Rel("Cities"))
+Select(Eq("Populati", Cst(50)), Select(Eq("Name", Cst("Paris")), Rel("Cities")))
 
