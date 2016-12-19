@@ -23,9 +23,9 @@
 \tableofcontents
 
 \section{Introduction}
-Comme conseill\'e dans l'\'enonc\'e, nous avons employer le principe de l'AST pour impl\'ementer ce v\'erificateur et traducteur.
+Comme conseill\'e dans l'\'enonc\'e, nous avons employ\'e le principe de l'AST pour impl\'ementer ce v\'erificateur et traducteur.
 
-Dans ce rapport, nous parlerons de l'utilisation de l'application, de la syntaxe \`a employer pour rentrer les commandes, de la façon dont l'AST est construit, de sa v\'erification et de sa traduction en SQL, ainsi que de la communication avec la base de donn\'ees.
+Dans ce rapport, nous parlerons de l'utilisation de l'application, de la syntaxe \`a employer pour rentrer les commandes, de la fa\c{c}on dont l'AST est construit, de sa v\'erification et de sa traduction en SQL, ainsi que de la communication avec la base de donn\'ees.
 
 Nous supposons que nous travaillons dans la base de donn\'ees suivante:
 
@@ -98,7 +98,7 @@ d\'efinirait la table suivante:
 	\end{tabular}
 \end{center}
 
-Nous n'avons pas permis de populer une table d\'efinie de cette façon.
+Nous n'avons pas permis de populer une table d\'efinie de cette fa\c{c}on.
 
 \section{Construction de l'AST}
 
@@ -114,15 +114,15 @@ Cette requ\^ete devrait \^etre encod\'ee comme:
 Rename("Name", "City", Proj(["Name"], Union(Select(Eq("Country", Cst("France")), Rel("Cities")), Select(Eq("Country", Cst("Belgique")), Rel("Cities")))))
 \end{request}
 
-Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\'ecid\'e de proc\'eder comme suivant:
+Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\'ecid\'e de proc\'eder comme suit:
 
 \begin{enumerate}
 	\item V\'erifier les parenth\`eses et crochets
 	\item D\'ecomposer la requ\^ete
-	\item Construire l'arbre noeud par noeud
+	\item Construire l'arbre n\œ{}ud par nœ{}ud
 \end{enumerate}
 
-La v\'erification des parenth\`eses et crochets est suffisament simple pour ne pas \^etre expliqu\'e ici.
+La v\'erification des parenth\`eses et crochets est suffisament simple pour ne pas \^etre expliqu\'ee ici.
 
 \subsection{D\'ecomposition}
 Cette \'etape cr\'ee une liste de listes et/ou de chaînes de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
