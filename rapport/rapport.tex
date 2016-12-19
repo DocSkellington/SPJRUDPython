@@ -1,0 +1,147 @@
+\documentclass[]{article}
+
+\usepackage{qtree}
+
+\usepackage{listings}
+
+\usepackage{hyperref}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[frenchb]{babel}
+
+\newtheorem{SPJRUDRequest}{Requ\^ete SPJRUD}
+\newtheorem{request}{Requ\^ete}
+
+\title{Rapport du projet de Base de Donn\'ees I}
+\author{DE COOMAN Thibaut \and STAQUET Ga\"etan}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+Comme conseill\'e dans l'\'enonc\'e, nous avons employer le principe de l'AST pour impl\'ementer ce v\'erificateur et traducteur.
+
+Dans ce rapport, nous parlerons de l'utilisation de l'application, de la syntaxe \`a employer pour rentrer les commandes, de la façon dont l'AST est construit, de sa v\'erification et de sa traduction en SQL, ainsi que de la communication avec la base de donn\'ees.
+
+Nous supposons que nous travaillons dans la base de donn\'ees suivante:
+
+\begin{center}
+	\begin{tabular}{| c | c | c |}
+		\hline
+		\textbf{Name} & \textbf{Country} & \textbf{Population} \\
+		\hline
+		Bruxelles & Belgique & 184230\\
+		\hline
+		Paris & France & 123456789\\
+		\hline
+	\end{tabular}
+	\label{Cities}
+\end{center}
+
+\section{Utilisation}
+L'application permet de travailler sur une base de donn\'ees d\'ej\`a existante ou sur un sch\'ema que l'utilisateur doit entrer. Une fois ceci fait, l'utilisateur peut entrer une requ\^ete SPJRUD. L'application v\'erifie cette requ\^ete et la traduit en SQL. Si l'utilisateur a demand\'e \`a employer une base de donn\'ees, l'application ex\'ecute (via SQLite) la requ\^ete SQL et affiche le r\'esultat. Dans tous les cas, l'application demande \`a l'utilisateur d'entrer une nouvelle requ\^ete (ou une ligne vide pour quitter l'application).
+
+\section{Syntaxe}
+\subsection{SPJRUD}
+Les requ\^etes SPJRUD doivent respecter la syntaxe d\'ecrite dans la table suivante. $E$ indique une relation alg\'ebrique et $E'$ indique cette relation \'ecrite dans la syntaxe demand\'ee par l'application.
+
+\begin{center}
+	\begin{tabular}{| c | c |}
+		\hline
+		\textbf{SPJRUD} & \textbf{Application}\\
+		\hline
+		Relation R & Rel("R")\\
+		\hline
+		$\sigma_{A='a'}(E)$ & Select(Eq("A", Cst('a')), $E'$)\\
+		\hline
+		$\sigma_{A=B}(E)$ & Select(Eq("A", Col("B")), $E'$)\\
+		\hline
+		$\pi_{X}(E)$ & Proj(["$X_1$", "$X_2$", "$X_3$", \ldots, "$X_n$"], $E'$)\\
+		\hline
+		$E_1 \bowtie E_2$ & Join($E_1'$, $E_2'$)\\
+		\hline
+		$\rho_{A \to C}(E)$ & Rename("A", "C", $E'$)\\
+		\hline
+		$E_1 \cup E_2$ & Union($E_1'$, $E_2'$)\\
+		\hline
+		$E_1 - E_2$ & Diff($E_1'$, $E_2'$)\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\subsection{Sch\'emas}
+La syntaxe \`a employer pour d\'efinir des sch\'emas de relation est la suivante:
+
+\begin{center}
+	\begin{tabular}{p{250px}}
+		"Nom de la relation", ("Nom de la colonne 1", "Type de la colonne (SQL types)", "Si la colonne peut contenir la valeur NULL ou non"), ("Nom de la colonne 2", \ldots), \ldots
+	\end{tabular}
+\end{center}
+
+Par exemple,
+\begin{center}
+	\begin{tabular}{p{250px}}
+		"Notes", ("Nom", "VARCHAR(25)", False), ("Points", "INTEGER", False)
+	\end{tabular}
+\end{center}
+
+d\'efinirait la table suivante:
+\begin{center}
+	\begin{tabular}{| c | c |}
+		\hline
+		\textbf{Nom} & \textbf{Points}\\
+		\hline
+	\end{tabular}
+\end{center}
+
+Nous n'avons pas permis de populer une table d\'efinie de cette façon.
+
+\section{Construction de l'AST}
+
+Admettons que l'utilisateur veuille traduire la requ\^ete en SPJRUD suivante:
+
+\begin{SPJRUDRequest}
+$\rho_{Name \to City}(\pi_{Name}(\sigma_{Country='France'}(Cities) \text{ } \cup \text{ } \sigma_{Country='Belgique'}(Cities)))$
+\end{SPJRUDRequest}
+
+Cette requ\^ete devrait \^etre encod\'ee comme:
+
+\begin{request}\label{request1}
+Rename("Name", "City", Proj(["Name"], Union(Select(Eq("Country", Cst("France")), Rel("Cities")), Select(Eq("Country", Cst("Belgique")), Rel("Cities")))))
+\end{request}
+
+Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\'ecid\'e de proc\'eder comme suivant:
+
+\begin{enumerate}
+	\item V\'erifier les parenth\`eses et crochets
+	\item D\'ecomposer la requ\^ete
+	\item Construire l'arbre noeud par noeud
+\end{enumerate}
+
+La v\'erification des parenth\`eses et crochets est suffisament simple pour ne pas \^etre expliqu\'e ici.
+
+\subsection{D\'ecomposition}
+Cette \'etape cr\'ee une liste de listes et/ou de chaînes de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
+
+La requ\^ete \ref{request1} donnerait ainsi la d\'ecomposition:
+
+\begin{center}
+	\begin{tabular}{p{250px}}
+		["Rename", ["Name", "City", "Proj", [["Name"], "Union", ["Select", ["Eq", ["Country", "Cst", ["France"]], "Rel", ["Cities"]], "Select", ["Eq", ["Country", "Cst", ["Belgique"]], "Rel", ["Cities"]]]]]]
+	\end{tabular}
+\end{center}
+
+\subsection{Construction}
+
+De cette liste, nous pouvons construire l'arbre suivant:
+
+\Tree [.Rename [.Proj [.Union [.Select [.Rel ] ] [.Select [.Rel ] ] ] ] ]
+
+\section{V\'erification de l'AST}
+
+\section{Traduction de l'AST}
+\end{document}

@@ -1,0 +1,5 @@
+Proj(['Population'], Join(Rename('Name', 'Capital', Rel(Table('Cities'))), Select(Eq('Country', Cst('Mali')), Rel(Table('CC')))))
+->
+['Proj', [['Population'], 'Join', ['Rename', ['Name', 'Capital', 'Rel', ['Table', ['Cities']]], 'Select', ['Eq', ['Country', 'Cst', ['Mali']], 'Rel', ['Table', ['CC']]]]]]
+
+Rel(Schema("Cities", ("Name", "VARCHAR(25)", False), ("Country", "VARCHAR(25)", False)))
