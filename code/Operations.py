@@ -216,3 +216,50 @@ class Union(Operation):
 
     def translate(self):
         pass
+
+class Difference(Operation):
+	"""Defines a Difference operation"""
+	def __init__(self, left, right):
+	super().__init__()
+	self.elements.append(left)
+	self.elements.append(right)
+	
+	def __str__(self):
+		return "Difference: " + str.(self.elements[0]) + " and " + str(self.elements[1])
+		
+	def check(self):
+		self.elements[0].check()
+		self.elements[1].check()
+		
+		left = self.elements[0].get_description()
+		right = self.elements[1].get_description()
+		
+		if not left.has_same_sorte(right):
+            raise SorteNotMatchingException(left, right, str(self))
+			
+		self.description = left
+		
+	def translate(self):
+		pass
+		
+class Join(Operation):
+	"""Defines a Join operation"""
+	def __init__(self, left, right):
+	super().__init__()
+	self.elements.append(left)
+	self.elements.append(right)
+	
+	def __str__(self):
+		return "Join: " + str.(self.elements[0]) + " and " + str(self.elements[1])
+		
+	def check(self):
+		self.elements[0].check()
+		self.elements[1].check()
+		
+		left = self.elements[0].get_description()
+		right = self.elements[1].get_description()
+		
+		self.description = left
+		
+	def translate(self):
+		pass
