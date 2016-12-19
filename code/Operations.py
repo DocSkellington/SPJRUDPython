@@ -220,9 +220,9 @@ class Union(Operation):
 class Difference(Operation):
     """Defines a Difference operation"""
     def __init__(self, left, right):
-    super().__init__()
-    self.elements.append(left)
-    self.elements.append(right)
+        super().__init__()
+        self.elements.append(left)
+        self.elements.append(right)
 	
     def __str__(self):
         return "Difference: " + str.(self.elements[0]) + " and " + str(self.elements[1])
