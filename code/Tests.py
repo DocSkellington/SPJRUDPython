@@ -94,7 +94,7 @@ class TestCheckOperations(unittest.TestCase):
         """ Tests the join """
         join = Operations.Join(Operations.Relation("Cities", self.db), Operations.Relation("Cities", self.db))
         join.check()
-        join = Operations.Join(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Country"]), Operations.Relation("Citites", self.db)))
+        join = Operations.Join(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Country"]), Operations.Relation("Citites", self.db))
         join.check()
 	
 if __name__ == '__main__':
