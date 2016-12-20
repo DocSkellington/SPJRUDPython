@@ -95,6 +95,8 @@ def build_AST(decomposition, database):
         decomposition (list of str): The result of the decomposition function (or a subpart of it)
         database (Database.Database): The database we want to use
     """
+    if len(decomposition) == 0:
+        raise InvalidRequestException("the request you entered is empty or does not contain any keyword")
     if decomposition[0] == "Select":
         # Searching the comparator
         comparator = None
