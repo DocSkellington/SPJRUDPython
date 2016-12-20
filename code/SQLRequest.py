@@ -16,9 +16,6 @@ class SQLRequest(object):
         self.from_clause = None
 
     def __str__(self):
-        print(self.columns)
-        print(self.aliases_to_col)
-        print(self.col_to_aliases)
         res = "SELECT "
         for i in range(len(self.columns)):
             if i != 0:

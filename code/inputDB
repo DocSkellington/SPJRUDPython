@@ -1,4 +1,4 @@
 y
 Test
-Select(Eq("Populati", Cst(50)), Select(Eq("Name", Cst("Paris")), Rel("Cities")))
+Proj(["Name", "Country", "Population"], Select(Eq("Country", Col("Country")), Rel("Cities")))
 

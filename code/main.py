@@ -185,6 +185,38 @@ def parse_schema(schema, database):
             description.add_column(column[0], column[1], column[len(column)-1])
     database.add_description(name, description)
 
+def execute_print(request, database):
+    """ Executes the SQL request on the database and prints the result
+    Args:
+        request (SQLRequest.SQLRequest): The SQL request
+        database (Database.Database): The database on which the request must be executed
+    """
+    description, result = database.execute(str(request))
+    columns_names = []
+    lengths = []                                # The lengths to use to display each column
+    for column in description:
+        columns_names.append(column[0])
+        lengths.append(len(column[0]))
+
+    for row in result:
+        for i in range(len(row)):
+            lengths[i] = max(lengths[i], len(str(row[i])))
+    hline = "-"
+    for length in lengths:
+        hline += "-" * (length+3)
+    print(hline)
+    header = "|"
+    for i in range(len(columns_names)):
+        header += " " + ("{0:^" + str(lengths[i]) + "s}").format(columns_names[i]) + " |"
+    print(header)
+    print(hline)
+    for row in result:
+        rowPrint = "|"
+        for i in range(len(row)):
+            rowPrint += " " + ("{0:^" + str(lengths[i]) + "s}").format(str(row[i])) + " |"
+        print(rowPrint)
+        print(hline)
+
 
 print("Do you want to use an existing database? (y/n)")
 res = input()
@@ -193,10 +225,12 @@ while res != 'y' and res != 'n':
     res = input()
 
 db = Database.Database()
+useDb = False
 if res == 'y':
     print("Please type the name of the database you want to use.")
     database = input()
     db.connect_to_SQL(database + ".db")
+    useDb = True
 else:
     while db.get_number_tables() == 0:
         print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
@@ -228,6 +262,8 @@ while not ok:
                 request = ast.translate()
                 print("The SQL request corresponding to your SPJRUD request is:")
                 print(str(request))
+                if useDb:
+                    execute_print(request, db)
             except OperationException as err:
                 print("ERROR: The expression:")
                 print("\t" + request)

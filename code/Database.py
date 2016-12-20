@@ -60,9 +60,14 @@ class Database(object):
         return len(self.tables)
 
     def execute(self, command):
-        """ Executes a command """
+        """ Executes a command
+        Returns a tuple composed of:
+            The description of the table (from cursor.description)
+            The result of the query (a list of tuples)
+        """
         if self.conn != None:
             self.c.execute(command)
+            return self.c.description, self.c.fetchall()
         else:
             raise MissingDatabaseException()
 
