@@ -132,16 +132,32 @@ La requ\^ete \ref{request1} donnerait ainsi la d\'ecomposition:
 \begin{center}
 	\begin{tabular}{p{250px}}
 		["Rename", ["Name", "City", "Proj", [["Name"], "Union", ["Select", ["Eq", ["Country", "Cst", ["France"]], "Rel", ["Cities"]], "Select", ["Eq", ["Country", "Cst", ["Belgique"]], "Rel", ["Cities"]]]]]]
-	\end{tabular}
+	\end{tabular}\label{"decomposition"}
 \end{center}
 
 \subsection{Construction}
 
-De cette liste, nous pouvons construire l'arbre suivant:
+Cette d\'ecomposition permet de construire un algorithme r\'ecursif pour construire l'arbre. Appelons-le \textit{build_AST}. Cet algorithme prend en param\`etre la sous-liste qui doit \^etre trait\'ee (le cas de base \'etant la Relation). Ainsi, la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]]} donnerait l'ex\'ecution suivante:
 
-\Tree [.Rename [.Proj [.Union [.Select [.Rel ] ] [.Select [.Rel ] ] ] ] ]
+\begin{enumerate}
+    \item build_AST(["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]])
+        \begin{enumerate}
+        \item build_AST(["Relation", ["R"]])
+        \end{enumerate}
+\end{enumerate}
+
+Lorque \textit{build_AST} rencontre un nom d'op\'eration, il r\'ecup\`ere les valeurs n\'ecessaires \`a cette op\'eration. Par exemple, l'Union demande deux sous-requ\^etes tandis que la Relation demande le nom de la relation.
+
+De la liste \ref{decomposition}, nous pouvons construire l'arbre suivant:
+
+\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
+
+Le nom indiqu\'e dans les n\œ{}uds est le nom de la classe employ\'ee.
 
 \section{V\'erification de l'AST}
+Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\œ{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes).
+
+Si une erreur est d\'etect\'ee, une Exception d\'ecrivant le probl\`eme est lanc\'ee.
 
 \section{Traduction de l'AST}
 \end{document}
