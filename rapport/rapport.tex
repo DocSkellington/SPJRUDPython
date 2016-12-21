@@ -9,10 +9,20 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+
 \usepackage[frenchb]{babel}
 
-\newtheorem{SPJRUDRequest}{Requ\^ete SPJRUD}
-\newtheorem{request}{Requ\^ete}
+\newfloat{request}{b}{req}
+\floatname{request}{Requ\^ete}
+
+\newfloat{decomposition}{b}{dec}
+\floatname{decomposition}{Décomposition}
+
+\newfloat{ast}{b}{ast}
+\floatname{ast}{AST}
 
 \title{Rapport du projet de Base de Donn\'ees I}
 \author{DE COOMAN Thibaut \and STAQUET Ga\"etan}
@@ -27,21 +37,6 @@ Comme conseill\'e dans l'\'enonc\'e, nous avons employ\'e le principe de l'AST p
 
 Dans ce rapport, nous parlerons de l'utilisation de l'application, de la syntaxe \`a employer pour rentrer les commandes, de la fa\c{c}on dont l'AST est construit, de sa v\'erification et de sa traduction en SQL, ainsi que de la communication avec la base de donn\'ees.
 
-Nous supposons que nous travaillons dans la base de donn\'ees suivante:
-
-\begin{center}
-	\begin{tabular}{| c | c | c |}
-		\hline
-		\textbf{Name} & \textbf{Country} & \textbf{Population} \\
-		\hline
-		Bruxelles & Belgique & 184230\\
-		\hline
-		Paris & France & 123456789\\
-		\hline
-	\end{tabular}
-	\label{Cities}
-\end{center}
-
 \section{Utilisation}
 L'application permet de travailler sur une base de donn\'ees d\'ej\`a existante ou sur un sch\'ema que l'utilisateur doit entrer. Une fois ceci fait, l'utilisateur peut entrer une requ\^ete SPJRUD. L'application v\'erifie cette requ\^ete et la traduit en SQL. Si l'utilisateur a demand\'e \`a employer une base de donn\'ees, l'application ex\'ecute (via SQLite) la requ\^ete SQL et affiche le r\'esultat. Dans tous les cas, l'application demande \`a l'utilisateur d'entrer une nouvelle requ\^ete (ou une ligne vide pour quitter l'application).
 
@@ -49,7 +44,8 @@ L'application permet de travailler sur une base de donn\'ees d\'ej\`a existante 
 \subsection{SPJRUD}
 Les requ\^etes SPJRUD doivent respecter la syntaxe d\'ecrite dans la table suivante. $E$ indique une relation alg\'ebrique et $E'$ indique cette relation \'ecrite dans la syntaxe demand\'ee par l'application.
 
-\begin{center}
+\begin{table}[H]
+	\centering
 	\begin{tabular}{| c | c |}
 		\hline
 		\textbf{SPJRUD} & \textbf{Application}\\
@@ -71,7 +67,8 @@ Les requ\^etes SPJRUD doivent respecter la syntaxe d\'ecrite dans la table suiva
 		$E_1 - E_2$ & Diff($E_1'$, $E_2'$)\\
 		\hline
 	\end{tabular}
-\end{center}
+	\caption{SPJRUD vers la syntaxe de l'application}
+\end{table}
 
 \subsection{Sch\'emas}
 La syntaxe \`a employer pour d\'efinir des sch\'emas de relation est la suivante:
@@ -90,28 +87,52 @@ Par exemple,
 \end{center}
 
 d\'efinirait la table suivante:
-\begin{center}
+\begin{table}[H]
+	\centering
 	\begin{tabular}{| c | c |}
 		\hline
 		\textbf{Nom} & \textbf{Points}\\
 		\hline
 	\end{tabular}
-\end{center}
+	\caption{Table de données créée par un schéma}
+\end{table}
 
 Nous n'avons pas permis de populer une table d\'efinie de cette fa\c{c}on.
 
 \section{Construction de l'AST}
 
+Nous supposons que nous travaillons avec la table de donn\'ees suivante:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c |}
+		\hline
+		\textbf{Name} & \textbf{Country} & \textbf{Population} \\
+		\hline
+		Bruxelles & Belgique & 184230\\
+		\hline
+		Paris & France & 123456789\\
+		\hline
+	\end{tabular}
+	\caption{Table Cities}
+	\label{Cities}
+\end{table}
+
 Admettons que l'utilisateur veuille traduire la requ\^ete en SPJRUD suivante:
 
-\begin{SPJRUDRequest}
-$\rho_{Name \to City}(\pi_{Name}(\sigma_{Country='France'}(Cities) \text{ } \cup \text{ } \sigma_{Country='Belgique'}(Cities)))$
-\end{SPJRUDRequest}
+\begin{request}[H]
+	\centering
+	$\rho_{Name \to City}(\pi_{Name}(\sigma_{Country='France'}(Cities) \text{ } \cup \text{ } \sigma_{Country='Belgique'}(Cities)))$
+	\caption{Requête SPJRUD exemple}
+\end{request}
 
 Cette requ\^ete devrait \^etre encod\'ee comme:
 
-\begin{request}\label{request1}
-Rename("Name", "City", Proj(["Name"], Union(Select(Eq("Country", Cst("France")), Rel("Cities")), Select(Eq("Country", Cst("Belgique")), Rel("Cities")))))
+\begin{request}[H]
+	\centering
+		Rename("Name", "City", Proj(["Name"], Union(Select(Eq("Country", Cst("France")), Rel("Cities")), Select(Eq("Country", Cst("Belgique")), Rel("Cities")))))
+	\caption{Requête exemple}
+	\label{exemple}
 \end{request}
 
 Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\'ecid\'e de proc\'eder comme suit:
@@ -127,13 +148,16 @@ La v\'erification des parenth\`eses et crochets est suffisament simple pour ne p
 \subsection{D\'ecomposition}
 Cette \'etape cr\'ee une liste de listes et/ou de chaînes de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
 
-La requ\^ete~\ref{request1} donnerait ainsi la d\'ecomposition:
+La~\nameref{exemple} donnerait ainsi la d\'ecomposition:
 
-\begin{center}
+\begin{decomposition}[H]
+	\centering
 	\begin{tabular}{p{250px}}
 		["Rename", ["Name", "City", "Proj", [["Name"], "Union", ["Select", ["Eq", ["Country", "Cst", ["France"]], "Rel", ["Cities"]], "Select", ["Eq", ["Country", "Cst", ["Belgique"]], "Rel", ["Cities"]]]]]]
-	\end{tabular}\label{decomposition}
-\end{center}
+	\end{tabular}
+	\caption{Décomposition de la requ\^ete exemple}
+	\label{exempleDecom}
+\end{decomposition}
 
 \subsection{Construction}
 
@@ -148,14 +172,18 @@ Cette d\'ecomposition permet de construire un algorithme r\'ecursif pour constru
 
 Lorque \textit{\texttt{build\_AST}} rencontre un nom d'op\'eration, il r\'ecup\`ere les valeurs n\'ecessaires \`a cette op\'eration. Par exemple, l'Union demande deux sous-requ\^etes tandis que la Relation demande le nom de la relation.
 
-De la liste~\ref{decomposition}, nous pouvons construire l'arbre suivant:
+De la liste~\ref{exempleDecom}, nous pouvons construire l'arbre suivant:
 
-\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
+\begin{ast}[H]
+	\centering
+		\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
+		\caption{AST de la décomposition de la requête exemple}
+\end{ast}
 
 Le nom indiqu\'e dans les n\oe{}uds est le nom de la classe employ\'ee.
 
 \section{V\'erification de l'AST}
-Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\oe{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes).
+Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\oe{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes). Nous nous sommes bas\'es sur les d\'efinitions du cours th\'eoriques pour impl\'ementer cette m\'ethode.
 
 Si une erreur est d\'etect\'ee, une Exception d\'ecrivant le probl\`eme est lanc\'ee et r\'ecup\'er\'ee par la fonction \textit{main}. Ainsi, l'AST est correct et valid\'e si aucune exception n'a \'et\'e lanc\'ee.
 
@@ -164,25 +192,40 @@ Une fois notre AST valid\'e, nous pouvons le traduire en une requ\^ete SQL. Pour
 
 Dans le tableau suivant, $E$ indique une requ\^ete en SPJRUD tandis que $E'$ indique la traduction de cette requ\^ete.
 
-\begin{tabular}{| l | p{100px} | p{100px} |}
-	\hline
-	Op\'eration (SPJRUD) & SQL & SQLRequest\\
-	\hline
-	Relation R & SELECT * FROM R & La clause FROM vaut \textit{R}\\
-	\hline
-	$\sigma_{A="a"} E$ & $E'$ WHERE A="a" & On ajoute la condition \textit{A="a"}\\
-	\hline
-	$\sigma_{A=B} E$ & $E'$ WHERE A=B & On ajoute la condition \textit{A=B}\\
-	\hline
-	$\pi_X E$ & SELECT X FROM \ldots & On ne garde que les colonnes X\\
-	\hline
-	$E_1 \bowtie E_2$ & ?? & ??\\
-	\hline
-	$\rho_{A \to B} E$ & SELECT A AS B, autres colonnes FROM \ldots & On ajoute un alias sur $A$ et on remplace toutes les occurences de $A$ par $B$ dans les conditions\\
-	\hline
-	$E_1 \cup E_2$ & ?? & ??\\
-	\hline
-	$E_1 - E_2$ & ?? & ??\\
-	\hline
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| l | p{100px} | p{100px} |}
+		\hline
+		Op\'eration (SPJRUD) & SQL & SQLRequest\\
+		\hline
+		Relation R & SELECT * FROM R & La clause FROM vaut \textit{R} et la liste des colonnes vaut celle de la relation\\
+		\hline
+		$\sigma_{A="a"} E$ & $E'$ WHERE A="a" & On ajoute la condition \textit{A="a"}\\
+		\hline
+		$\sigma_{A=B} E$ & $E'$ WHERE A=B & On ajoute la condition \textit{A=B}\\
+		\hline
+		$\pi_X E$ & SELECT X FROM \ldots & On ne garde que les colonnes X\\
+		\hline
+		$E_1 \bowtie E_2$ & ?? & ??\\
+		\hline
+		$\rho_{A \to B} E$ & SELECT A AS B, autres colonnes FROM \ldots & On ajoute un alias sur $A$ et on remplace toutes les occurences de $A$ par $B$ dans les conditions\\
+		\hline
+		$E_1 \cup E_2$ & ?? & ??\\
+		\hline
+		$E_1 - E_2$ & ?? & ??\\
+		\hline
+	\end{tabular}
+	\caption{SPJRUD vers SQL (avec les modifications de l'application)}
+\end{table}
+
+Pour des raisons de simplicit\'e de code, nous avons d\'ecid\'e d'indiquer \`a chaque fois explicitement les colonnes, m\^eme quand il n'y a pas de projection. Le programme traduira \textit{Rel("A")} (en supposant que $sorte(A)={B, X, Y}$ en \textit{SELECT B, X, Y FROM A}.
+
+Ainsi, notre requ\^ete~\ref{exempleDecom} donnerait la requ\^ete en SQL:\\
+
+\begin{tabular}{p{275px}}
+	SELECT Name AS City FROM ((SELECT Name, Country, Population FROM Cities WHERE Country="France") UNION (SELECT Name, Country, Population FROM Cities WHERE Country="Belgique"))
 \end{tabular}
+\\
+
+Les deux membres de l'Union auraient pu \^etre r\'eunis en une seule sous-requ\^ete en joignant les deux conditions par un \textit{OR} mais, dans un soucis de garder le code simple et efficace dans toutes les conditions, nous avons pr\'ef\'er\'e laisser l'Union telle quelle.
 \end{document}
