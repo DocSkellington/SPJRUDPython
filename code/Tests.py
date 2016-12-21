@@ -79,6 +79,9 @@ class TestCheckOperations(unittest.TestCase):
         union = Operations.Union(Operations.Projection(["Name", "Country"], Operations.Relation("Cities", self.db)), Operations.Projection(["Population"], Operations.Relation("Cities", self.db)))
         with self.assertRaises(SorteNotMatchingException):
             union.check()
+        union = Operations.Union(Operations.Relation("Cities", self.db), Operations.Relation("Countries", self.db))
+        with self.assertRaises(SorteNotMatchingException):
+            union.check()
 			
     def test_difference(self):
         """ Tests the difference """
@@ -90,12 +93,17 @@ class TestCheckOperations(unittest.TestCase):
         difference = Operations.Difference(Operations.Projection(["Name", "Country"], Operations.Relation("Cities", self.db)), Operations.Projection(["Population"], Operations.Relation("Cities", self.db)))
         with self.assertRaises(SorteNotMatchingException):
             difference.check()
+        difference = Operations.Difference(Operations.Relation("Cities", self.db), Operations.Relation("Countries", self.db))
+        with self.assertRaises(SorteNotMatchingException):
+            difference.check()
 			
     def test_join(self):
         """ Tests the join """
         join = Operations.Join(Operations.Relation("Cities", self.db), Operations.Relation("Cities", self.db))
         join.check()
         join = Operations.Join(Operations.Projection(["Name"], Operations.Relation("Cities", self.db)), Operations.Projection(["Country"], Operations.Relation("Cities", self.db)))
+        join.check()
+        join = Operations.Join(Operations.Relation("Countries", self.db), Operations.Relation("Cities", self.db))
         join.check()
 	
 if __name__ == '__main__':
