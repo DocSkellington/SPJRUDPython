@@ -119,7 +119,7 @@ Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\
 \begin{enumerate}
 	\item V\'erifier les parenth\`eses et crochets
 	\item D\'ecomposer la requ\^ete
-	\item Construire l'arbre n\œ{}ud par nœ{}ud
+	\item Construire l'arbre n\oe{}ud par n\oe{}ud
 \end{enumerate}
 
 La v\'erification des parenth\`eses et crochets est suffisament simple pour ne pas \^etre expliqu\'ee ici.
@@ -127,37 +127,62 @@ La v\'erification des parenth\`eses et crochets est suffisament simple pour ne p
 \subsection{D\'ecomposition}
 Cette \'etape cr\'ee une liste de listes et/ou de chaînes de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
 
-La requ\^ete \ref{request1} donnerait ainsi la d\'ecomposition:
+La requ\^ete~\ref{request1} donnerait ainsi la d\'ecomposition:
 
 \begin{center}
 	\begin{tabular}{p{250px}}
 		["Rename", ["Name", "City", "Proj", [["Name"], "Union", ["Select", ["Eq", ["Country", "Cst", ["France"]], "Rel", ["Cities"]], "Select", ["Eq", ["Country", "Cst", ["Belgique"]], "Rel", ["Cities"]]]]]]
-	\end{tabular}\label{"decomposition"}
+	\end{tabular}\label{decomposition}
 \end{center}
 
 \subsection{Construction}
 
-Cette d\'ecomposition permet de construire un algorithme r\'ecursif pour construire l'arbre. Appelons-le \textit{build_AST}. Cet algorithme prend en param\`etre la sous-liste qui doit \^etre trait\'ee (le cas de base \'etant la Relation). Ainsi, la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]]} donnerait l'ex\'ecution suivante:
+Cette d\'ecomposition permet de construire un algorithme r\'ecursif pour construire l'arbre. Appelons-le \textit{\texttt{build\_AST}}. Cet algorithme prend en param\`etre la sous-liste qui doit \^etre trait\'ee (le cas de base \'etant la Relation). Ainsi, la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]]} donnerait l'ex\'ecution suivante:
 
 \begin{enumerate}
-    \item build_AST(["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]])
+	\item \texttt{build\_AST}(["Select", ["Eq", ["A", "Cst", ["a"]], "Relation", ["R"]]])
         \begin{enumerate}
-        \item build_AST(["Relation", ["R"]])
+			\item \texttt{build\_AST}(["Relation", ["R"]])
         \end{enumerate}
 \end{enumerate}
 
-Lorque \textit{build_AST} rencontre un nom d'op\'eration, il r\'ecup\`ere les valeurs n\'ecessaires \`a cette op\'eration. Par exemple, l'Union demande deux sous-requ\^etes tandis que la Relation demande le nom de la relation.
+Lorque \textit{\texttt{build\_AST}} rencontre un nom d'op\'eration, il r\'ecup\`ere les valeurs n\'ecessaires \`a cette op\'eration. Par exemple, l'Union demande deux sous-requ\^etes tandis que la Relation demande le nom de la relation.
 
-De la liste \ref{decomposition}, nous pouvons construire l'arbre suivant:
+De la liste~\ref{decomposition}, nous pouvons construire l'arbre suivant:
 
 \Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
 
-Le nom indiqu\'e dans les n\œ{}uds est le nom de la classe employ\'ee.
+Le nom indiqu\'e dans les n\oe{}uds est le nom de la classe employ\'ee.
 
 \section{V\'erification de l'AST}
-Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\œ{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes).
+Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\oe{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes).
 
-Si une erreur est d\'etect\'ee, une Exception d\'ecrivant le probl\`eme est lanc\'ee.
+Si une erreur est d\'etect\'ee, une Exception d\'ecrivant le probl\`eme est lanc\'ee et r\'ecup\'er\'ee par la fonction \textit{main}. Ainsi, l'AST est correct et valid\'e si aucune exception n'a \'et\'e lanc\'ee.
 
 \section{Traduction de l'AST}
+Une fois notre AST valid\'e, nous pouvons le traduire en une requ\^ete SQL. Pour ce faire, nous avons une classe \textit{SQLRequest} qui contient les informations sur la clause FROM, les conditions, les colonnes, les alias, \ldots Les instances de cette classe sont construites par la m\'ethode \textit{translate} de \textit{Operation}. Comme pour \textit{check}, cette m\'ethode demande d'abord aux op\'erations enfants de cr\'eer leur traduction.
+
+Dans le tableau suivant, $E$ indique une requ\^ete en SPJRUD tandis que $E'$ indique la traduction de cette requ\^ete.
+
+\begin{tabular}{| l | p{100px} | p{100px} |}
+	\hline
+	Op\'eration (SPJRUD) & SQL & SQLRequest\\
+	\hline
+	Relation R & SELECT * FROM R & La clause FROM vaut \textit{R}\\
+	\hline
+	$\sigma_{A="a"} E$ & $E'$ WHERE A="a" & On ajoute la condition \textit{A="a"}\\
+	\hline
+	$\sigma_{A=B} E$ & $E'$ WHERE A=B & On ajoute la condition \textit{A=B}\\
+	\hline
+	$\pi_X E$ & SELECT X FROM \ldots & On ne garde que les colonnes X\\
+	\hline
+	$E_1 \bowtie E_2$ & ?? & ??\\
+	\hline
+	$\rho_{A \to B} E$ & SELECT A AS B, autres colonnes FROM \ldots & On ajoute un alias sur $A$ et on remplace toutes les occurences de $A$ par $B$ dans les conditions\\
+	\hline
+	$E_1 \cup E_2$ & ?? & ??\\
+	\hline
+	$E_1 - E_2$ & ?? & ??\\
+	\hline
+\end{tabular}
 \end{document}

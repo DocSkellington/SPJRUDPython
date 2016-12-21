@@ -7,5 +7,5 @@
 \contentsline {section}{\numberline {4}Construction de l'AST}{3}{section.4}
 \contentsline {subsection}{\numberline {4.1}D\'ecomposition}{3}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Construction}{3}{subsection.4.2}
-\contentsline {section}{\numberline {5}V\'erification de l'AST}{3}{section.5}
-\contentsline {section}{\numberline {6}Traduction de l'AST}{3}{section.6}
+\contentsline {section}{\numberline {5}V\'erification de l'AST}{4}{section.5}
+\contentsline {section}{\numberline {6}Traduction de l'AST}{4}{section.6}
