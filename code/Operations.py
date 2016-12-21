@@ -116,6 +116,7 @@ class Projection(Operation):
                 message = "Projection: ["
                 for col in self.columns:
                     message += "'" + col + "'"
+                message += ']'
                 raise InvalidColumnNameException(column, self.description, message)
 
         self.description.keep_columns(self.columns)
