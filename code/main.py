@@ -246,6 +246,8 @@ else:
         if db.get_number_tables() == 0:
             print("ERROR: Your database must contain at least 1 table.")
 
+print("\n\n\n\n")
+
 ok = False
 while not ok:
     print("Please insert your SPJRUD request. Enter an empty line to exit the application")
@@ -259,13 +261,13 @@ while not ok:
             ast = parser(db, request)
             try:
                 ast.check()
-                ok = True
                 print("You request was correct.")
                 request = ast.translate()
                 print("The SQL request corresponding to your SPJRUD request is:")
                 print(str(request))
                 if useDb:
                     execute_print(request, db)
+                print("\n\n\n\n")
             except OperationException as err:
                 print("ERROR: The expression:")
                 print("\t" + request)
