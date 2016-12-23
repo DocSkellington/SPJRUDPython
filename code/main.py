@@ -13,6 +13,8 @@ def check_parenthesises(request):
         if char == '(' or char == '[':
             stack.append(char)
         elif char == ')' or char == ']':
+            if len(stack) == 0:
+                raise MissingOpeningParenthesisException(char, '(' if char==')' else '[')
             prev = stack.pop()
             if prev == "(" and char != ")":
                 raise InvalidParenthesisException(char, prev, ')', i)

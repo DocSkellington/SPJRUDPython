@@ -118,6 +118,15 @@ class MissingParenthesisException(ParserException):
     def __str__(self):
         return "you opened a " + self.char + " but did not close it"
 
+class MissingOpeningParenthesisException(MissingParenthesisException):
+    """ Defines the exception for a bracket/parenthesis closed but not opened """
+    def __init__(self, char, should):
+        super().__init__(char)
+        self.should = should
+
+    def __str__(self):
+        return "you closed a " + self.char + " but you did not open with a " + self.should + " before"
+
 class InvalidParameterException(ParserException):
     """ Defines the exception for an invalid parameter """
     def __init__(self, what, who):
