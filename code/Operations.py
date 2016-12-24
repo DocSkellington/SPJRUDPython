@@ -264,9 +264,10 @@ class Join(Operation):
         left = self.elements[0].get_description()
         right = self.elements[1].get_description()
 		
-        self.description = left
+        self.description = right
+        self.com = self.description.join(left)
 		
     def translate(self):
         requestLeft = self.elements[0].translate()
         requestRight = self.elements[1].translate()
-        return SubrequestsHandler(requestLeft, requestRight, "INNER JOIN")
+        return JoinRequest(requestLeft, requestRight, self.com)

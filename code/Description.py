@@ -95,6 +95,15 @@ class Description(object):
             raise InvalidColumnNameException(name, self)
         return self.types[name]
 
+    def get_column_SQLType(self, name):
+        """ Returns the SQL type that the column 'name' supports
+        Args:
+            name (str): The name of the column
+        """
+        if not self.is_column_name(name):
+            raise InvalidColumnNameException(name, self)
+        return self.sqlTypes[name]
+
     def keep_columns(self, names):
         """ Keeps only the columns whose name is in the given list
         Args:
@@ -146,3 +155,13 @@ class Description(object):
     def has_same_sorte(self, other):
         """ Checks that two descriptions have the same sorte """
         return self.get_column_names() == other.get_column_names()
+
+    def join(self, other):
+        """ Joins this schema with the other. Returns the common columns """
+        com = []
+        for col in other.get_column_names():
+            if self.is_column_name(col):
+                com.append(col)
+            else:
+                self.add_column(col, other.get_column_SQLType(col), other.can_be_null(col))
+        return com

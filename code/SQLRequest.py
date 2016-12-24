@@ -65,9 +65,6 @@ class SQLRequest(object):
             column (str): The name of the column to change
             alias (str): The new name of the column
         """
-        print(column)
-        print(self.aliases_to_col)
-        print(self.col_to_aliases)
         if column in self.aliases_to_col:               # We change an alias
             if alias in self.col_to_aliases:            # We remove the alias
                 del self.aliases_to_col[column]
@@ -116,3 +113,18 @@ class SubrequestsHandler(object):
         
     def __str__(self):
         return str(self.left) + " " + self.operator + " " + str(self.right)
+
+class JoinRequest(object):
+    def __init__(self, left, right, common):
+        self.left = left
+        self.right = right
+        self.common = common
+
+    def __str__(self):
+        using = "USING ("
+        for i in range(len(self.common)):
+            if i > 0:
+                using += ", "
+            using += self.common[i]
+        using += ")"
+        return "SELECT * FROM ((" + str(self.left) + ") INNER JOIN (" + str(self.right) + ") " + using + ")"
