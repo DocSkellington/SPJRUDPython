@@ -2,5 +2,5 @@ y
 Test
 Rename("Name", "Country", Rel("Countries"))
 Join(Rel("Cities"), Rename("Name", "Country", Rel("Countries")))
-Join(Proj(["Name", "Country"], Rel("Cities")), Rename("Name", "Country", Rel("Countries")))
+Join(Join(Proj(["Name", "Country"], Rel("Cities")), Rename("Name", "Country", Rel("Countries"))), Rel("Cities"))
 
