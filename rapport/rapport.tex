@@ -19,7 +19,7 @@
 \floatname{request}{Requ\^ete}
 
 \newfloat{decomposition}{b}{dec}
-\floatname{decomposition}{Décomposition}
+\floatname{decomposition}{D\'ecomposition}
 
 \newfloat{ast}{b}{ast}
 \floatname{ast}{AST}
@@ -94,7 +94,7 @@ d\'efinirait la table suivante:
 		\textbf{Nom} & \textbf{Points}\\
 		\hline
 	\end{tabular}
-	\caption{Table de données créée par un schéma}
+	\caption{Table de donn\'ees cr\'e\'ee par un sch\'ema}
 \end{table}
 
 Nous n'avons pas permis de populer une table d\'efinie de cette fa\c{c}on.
@@ -123,7 +123,7 @@ Admettons que l'utilisateur veuille traduire la requ\^ete en SPJRUD suivante:
 \begin{request}[H]
 	\centering
 	$\rho_{Name \to City}(\pi_{Name}(\sigma_{Country='France'}(Cities) \text{ } \cup \text{ } \sigma_{Country='Belgique'}(Cities)))$
-	\caption{Requête SPJRUD exemple}
+	\caption{Requ\^ete SPJRUD exemple}
 \end{request}
 
 Cette requ\^ete devrait \^etre encod\'ee comme:
@@ -131,7 +131,7 @@ Cette requ\^ete devrait \^etre encod\'ee comme:
 \begin{request}[H]
 	\centering
 		Rename("Name", "City", Proj(["Name"], Union(Select(Eq("Country", Cst("France")), Rel("Cities")), Select(Eq("Country", Cst("Belgique")), Rel("Cities")))))
-	\caption{Requête exemple}
+	\caption{Requ\^ete exemple}
 	\label{exemple}
 \end{request}
 
@@ -146,7 +146,7 @@ Pour pouvoir construire l'arbre correspondant \`a cette requ\^ete, nous avons d\
 La v\'erification des parenth\`eses et crochets est suffisament simple pour ne pas \^etre expliqu\'ee ici.
 
 \subsection{D\'ecomposition}
-Cette \'etape cr\'ee une liste de listes et/ou de chaînes de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
+Cette \'etape cr\'ee une liste de listes et/ou de cha\^ines de caract\`eres. Par exemple, \textit{Select(Eq("A", Cst(a)), Rel("R"))} donne la d\'ecomposition \textit{["Select", ["Eq", ["A", "Cst", ["a"]], "Rel", ["R"]]]}
 
 La~\nameref{exemple} donnerait ainsi la d\'ecomposition:
 
@@ -155,7 +155,7 @@ La~\nameref{exemple} donnerait ainsi la d\'ecomposition:
 	\begin{tabular}{p{250px}}
 		["Rename", ["Name", "City", "Proj", [["Name"], "Union", ["Select", ["Eq", ["Country", "Cst", ["France"]], "Rel", ["Cities"]], "Select", ["Eq", ["Country", "Cst", ["Belgique"]], "Rel", ["Cities"]]]]]]
 	\end{tabular}
-	\caption{Décomposition de la requ\^ete exemple}
+	\caption{D\'ecomposition de la requ\^ete exemple}
 	\label{exempleDecom}
 \end{decomposition}
 
@@ -177,7 +177,7 @@ De la liste~\ref{exempleDecom}, nous pouvons construire l'arbre suivant:
 \begin{ast}[H]
 	\centering
 		\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
-		\caption{AST de la décomposition de la requête exemple}
+		\caption{AST de la d\'ecomposition de la requ\^ete exemple}
 \end{ast}
 
 Le nom indiqu\'e dans les n\oe{}uds est le nom de la classe employ\'ee.
