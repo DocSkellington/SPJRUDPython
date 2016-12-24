@@ -3,7 +3,7 @@ import Database
 import Description
 import copy
 from Exceptions import *
-from SQLRequest import SQLRequest
+from SQLRequest import *
 
 class Operation(abc.ABC):
     """ Defines the common attributs of the operations
