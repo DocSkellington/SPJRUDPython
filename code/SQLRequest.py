@@ -115,4 +115,4 @@ class SubrequestsHandler(object):
         self.operator = operator
         
     def __str__(self):
-        return "(" + str(left) + ") " + operator + " (" + str(right) + ")"
+        return "(" + str(self.left) + ") " + self.operator + " (" + str(self.right) + ")"
