@@ -216,7 +216,9 @@ class Union(Operation):
         self.description = left
 
     def translate(self):
-        pass
+        requestLeft = self.elements[0].translate()
+        requestRight = self.elements[1].translate()
+        return SubrequestsHandler(requestLeft, requestRight, "UNION")
 
 class Difference(Operation):
     """Defines a Difference operation"""
@@ -241,7 +243,9 @@ class Difference(Operation):
         self.description = left
 		
     def translate(self):
-        pass
+        requestLeft = self.elements[0].translate()
+        requestRight = self.elements[1].translate()
+        return SubrequestsHandler(requestLeft, requestRight, "EXCEPT")
 		
 class Join(Operation):
     """Defines a Join operation"""
@@ -263,4 +267,6 @@ class Join(Operation):
         self.description = left
 		
     def translate(self):
-        pass
+        requestLeft = self.elements[0].translate()
+        requestRight = self.elements[1].translate()
+        return SubrequestsHandler(requestLeft, requestRight, "INNER JOIN")

@@ -108,5 +108,11 @@ class SQLRequest(object):
         """
         self.from_clause = clause
 
-class SubrequestsHandler():
-    
+class SubrequestsHandler(object):
+    def __init__(self, left, right, operator):
+        self.left = left
+        self.right =  right
+        self.operator = operator
+        
+    def __str__(self):
+        return "(" + str(left) ") " + operator + " (" + str(right) + ")"
