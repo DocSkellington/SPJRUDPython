@@ -145,14 +145,14 @@ def build_AST(decomposition, database):
             raise InvalidParameterException("at least one column" , "Project")
         return Operations.Projection(decomposition[1][0], build_AST(decomposition[1][1:], database))
     elif decomposition[0] == "Join":
-        pass
+        return Operations.Join(build_AST(decomposition[1][0:2], database), build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Rename":
         # We give the name to replace, the new name to use and the operation to proceed next
         return Operations.Rename(decomposition[1][0], decomposition[1][1], build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Union":
         return Operations.Union(build_AST(decomposition[1][0:2], database), build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Diff":
-        pass
+        return Operations.Difference(build_AST(decomposition[1][0:2], database), build_AST(decomposition[1][2:], database))
     elif decomposition[0] == "Rel":
         return Operations.Relation(decomposition[1][0], database)
     else:

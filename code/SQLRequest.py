@@ -107,3 +107,6 @@ class SQLRequest(object):
             clause (str or SQLRequest): The FROM clause
         """
         self.from_clause = clause
+
+class SubrequestsHandler():
+    
