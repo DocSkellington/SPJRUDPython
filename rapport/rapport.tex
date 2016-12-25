@@ -206,13 +206,13 @@ Dans le tableau suivant, $E$ indique une requ\^ete en SPJRUD tandis que $E'$ ind
 		\hline
 		$\pi_X E$ & SELECT X FROM \ldots & On ne garde que les colonnes X\\
 		\hline
-		$E_1 \bowtie E_2$ & ?? & ??\\
+		$E_1 \bowtie E_2$ & SELECT * FROM ($E_1'$ INNER JOIN ($E_2'$) USING ($col_1$, $col_2$, \ldots) & On met les colonnes communes aux deux sch\'emas dans USING \\
 		\hline
 		$\rho_{A \to B} E$ & SELECT A AS B, autres colonnes FROM \ldots & On ajoute un alias sur $A$ et on remplace toutes les occurences de $A$ par $B$ dans les conditions\\
 		\hline
-		$E_1 \cup E_2$ & ?? & ??\\
+		$E_1 \cup E_2$ & $E_1'$ UNION $E_2'$ & On met la clause UNION entre les deux sous-requ\^etes\\
 		\hline
-		$E_1 - E_2$ & ?? & ??\\
+		$E_1 - E_2$ & $E_1'$ EXCEPT $E_2'$ & On met la clause EXCEPT entre les deux sous-requ\^etes\\
 		\hline
 	\end{tabular}
 	\caption{SPJRUD vers SQL (avec les modifications de l'application)}
