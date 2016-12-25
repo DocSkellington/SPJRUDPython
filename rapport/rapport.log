@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdflatex 2016.10.10)  21 DEC 2016 21:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdflatex 2016.12.25)  25 DEC 2016 19:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -23,7 +23,7 @@ File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(/etc/texmf/tex/latex/qtree/qtree.sty
+(/usr/share/texlive/texmf-dist/tex/latex/qtree/qtree.sty
 Package: 2008/12/12 v.3.1bQtree: tree-drawing for linguistics
 Package: qtree 2008/12/12 v.3.1bQtree: tree-drawing for linguistics
 (/usr/share/texlive/texmf-dist/tex/latex/pict2e/pict2e.sty
@@ -543,44 +543,9 @@ Package frenchb.ldf Warning: OT1 encoding should not be used for French.
 
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
- [2]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
 Package hyperref Info: bookmark level for unknown request defaults to 0 on inpu
 t line 126.
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ® in font cmr10!
-
-Overfull \hbox (1.09032pt too wide) in paragraph at lines 149--150
-[]\OT1/cmr/m/n/10 Cette ^^Setape cr^^See une liste de listes et/ou de chanes de
- ca-ract^^Reres. Par exemple,
- []
-
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
 
 Underfull \hbox (badness 10000) in paragraph at lines 156--157
 []\OT1/cmr/m/n/10 ["Rename", ["Name", "City", "Proj", [["Name"],
@@ -588,75 +553,76 @@ Underfull \hbox (badness 10000) in paragraph at lines 156--157
 
 Package hyperref Info: bookmark level for unknown decomposition defaults to 0 o
 n input line 158.
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-
+[3]
 Overfull \hbox (14.36171pt too wide) in paragraph at lines 164--165
 []\OT1/cmr/m/n/10 Cette d^^Secomposition per-met de construire un al-go-rithme 
 r^^Secursif pour construire
  []
 
-[3]
 Package hyperref Info: bookmark level for unknown ast defaults to 0 on input li
-ne 180.
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no © in font cmr10!
-Missing character: There is no Ã in font cmr10!
-Missing character: There is no ª in font cmr10!
- [4]
-Underfull \hbox (badness 6493) in paragraph at lines 211--211
+ne 179.
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 208--208
+\OT1/cmr/m/n/10 IN-NER JOIN ($\OML/cmm/m/it/10 E[]$\OT1/cmr/m/n/10 )
+ []
+
+
+Underfull \hbox (badness 1552) in paragraph at lines 208--209
+[]\OT1/cmr/m/n/10 On met les co-lonnes
+ []
+
+
+Underfull \hbox (badness 4328) in paragraph at lines 208--209
+\OT1/cmr/m/n/10 com-munes aux deux
+ []
+
+
+Underfull \hbox (badness 6493) in paragraph at lines 210--210
 []\OT1/cmr/m/n/10 SELECT A AS B,
  []
 
 
-Underfull \hbox (badness 5417) in paragraph at lines 211--212
+Underfull \hbox (badness 5417) in paragraph at lines 210--211
 []\OT1/cmr/m/n/10 On ajoute un alias
  []
 
 
-Underfull \hbox (badness 2197) in paragraph at lines 211--212
+Underfull \hbox (badness 2197) in paragraph at lines 210--211
 \OT1/cmr/m/n/10 toutes les oc-cu-rences
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 223--224
+Underfull \hbox (badness 10000) in paragraph at lines 212--213
+[]\OT1/cmr/m/n/10 On met la clause
+ []
+
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 222--223
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 225--229
+Underfull \hbox (badness 10000) in paragraph at lines 224--228
 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 231.
-[5] [6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 231.
+Missing character: There is no Ã in font cmr10!
+Missing character: There is no ¢ in font cmr10!
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 250.
+[6]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 250.
  (./rapport.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 231.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 231.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 250.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 250.
 Package rerunfilecheck Info: File `rapport.out' has not changed.
-(rerunfilecheck)             Checksum: 55666513403C7135BFE83F806DF5C7DC;545.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 231.
+(rerunfilecheck)             Checksum: 591C37FEB58A941701BCF35D1EB74E91;806.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 250.
  ) 
 Here is how much of TeX's memory you used:
- 9391 strings out of 493105
- 139250 string characters out of 6137071
- 248437 words of memory out of 5000000
- 12732 multiletter control sequences out of 15000+600000
+ 9401 strings out of 493105
+ 139434 string characters out of 6137071
+ 249437 words of memory out of 5000000
+ 12738 multiletter control sequences out of 15000+600000
  10006 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,11n,38p,778b,439s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -674,10 +640,10 @@ cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.
 pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on rapport.pdf (6 pages, 180944 bytes).
+Output written on rapport.pdf (6 pages, 184565 bytes).
 PDF statistics:
- 168 PDF objects out of 1000 (max. 8388607)
- 143 compressed objects within 2 object streams
- 31 named destinations out of 1000 (max. 500000)
- 81 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 188 PDF objects out of 1000 (max. 8388607)
+ 163 compressed objects within 2 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 113 words of extra memory for PDF output out of 10000 (max. 10000000)
 

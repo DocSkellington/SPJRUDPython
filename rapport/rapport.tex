@@ -175,9 +175,8 @@ Lorque \textit{\texttt{build\_AST}} rencontre un nom d'op\'eration, il r\'ecup\`
 De la liste~\ref{exempleDecom}, nous pouvons construire l'arbre suivant:
 
 \begin{ast}[H]
-	\centering
-		\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
-		\caption{AST de la d\'ecomposition de la requ\^ete exemple}
+	\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
+	\caption{AST de la d\'ecomposition de la requ\^ete exemple}
 \end{ast}
 
 Le nom indiqu\'e dans les n\oe{}uds est le nom de la classe employ\'ee.
@@ -228,4 +227,24 @@ Ainsi, notre requ\^ete~\ref{exempleDecom} donnerait la requ\^ete en SQL:\\
 \\
 
 Les deux membres de l'Union auraient pu \^etre r\'eunis en une seule sous-requ\^ete en joignant les deux conditions par un \textit{OR} mais, dans un soucis de garder le code simple et efficace dans toutes les conditions, nous avons pr\'ef\'er\'e laisser l'Union telle quelle.
+
+\section{Probl\`emes rencontr\'es}
+\subsection{Construction de l'AST}
+Notre premier probl\`eme a \'et\'e de constuire efficacement l'AST (ce qui est, bien s\^ur, fortement li\'e \`a l'\'enonc\'e) et de r\'epondre aux questions suivantes:
+\begin{itemize}
+	\item Quelle est la syntaxe qu'on peut traiter ?
+	\item Comment v\'erifier la syntaxe rentr\'ee ?
+	\item Comment v\'erifier que l'arbre est correct ?
+	\item Comment traduire ?
+\end{itemize}
+
+Les r\'eponses \`a ces questions ont \'et\'e expliqu\'ees dans les sections pr\'ec\'edentes.
+
+\subsection{Organisation}
+Etant donn\'e que nous avons eu un autre projet, nous avons d\^u nous r\'epartir le travail afin d'\^etre capable de finir le projet.
+
+\subsection{Emploi de SQLite}
+Nous ne connaissions pas SQLite avant ce projet. Il nous a donc fallu apprendre \`a correctement communiquer avec ctte biblioth\`eque, en faisant des essais grâce \`a l'interpr\'eteur Python.
+
+De plus, ce projet est le premier que nous avons fait en Python, mais cela ne nous a pas pos\'e de probl\`eme.
 \end{document}

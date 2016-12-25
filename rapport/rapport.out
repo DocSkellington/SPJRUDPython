@@ -8,3 +8,7 @@
 \BOOKMARK [2][-]{subsection.4.2}{Construction}{section.4}% 8
 \BOOKMARK [1][-]{section.5}{V\351rification de l'AST}{}% 9
 \BOOKMARK [1][-]{section.6}{Traduction de l'AST}{}% 10
+\BOOKMARK [1][-]{section.7}{Probl\350mes rencontr\351s}{}% 11
+\BOOKMARK [2][-]{subsection.7.1}{Construction de l'AST}{section.7}% 12
+\BOOKMARK [2][-]{subsection.7.2}{Organisation}{section.7}% 13
+\BOOKMARK [2][-]{subsection.7.3}{Emploi de SQLite}{section.7}% 14
