@@ -222,31 +222,39 @@ def execute_print(request, database):
         print(hline)
 
 
-print("Do you want to use an existing database? (y/n)")
-res = input()
-while res != 'y' and res != 'n':
-    print("Please type y if you want to use an existing database or n otherwise")
+askDb = True
+while askDb:
+    print("Do you want to use an existing database? (y/n)")
     res = input()
-
-db = Database.Database()
-useDb = False
-if res == 'y':
-    print("Please type the name of the database you want to use.")
-    database = input()
-    db.connect_to_SQL(database + ".db")
-    useDb = True
-else:
-    while db.get_number_tables() == 0:
-        print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
+    while res != 'y' and res != 'n':
+        print("Please type y if you want to use an existing database or n otherwise")
         res = input()
-        while res != '':
-            try:
-                parse_schema(res, db)
-            except ParserException as err:
-                print("ERROR: Your schema does not correspond to our exigences because " + str(err) + ". Please correct it")
+
+    db = Database.Database()
+    useDb = False
+    if res == 'y':
+        print("Please type the name of the database you want to use.")
+        database = input()
+        try:
+            db.connect_to_SQL(database + ".db")
+            useDb = True
+            askDb = False
+        except DatabaseException as err:
+            print("ERROR: " + str(err))
+    else:
+        while db.get_number_tables() == 0:
+            print("Please type the schema of a table as following: Name, (ColumnName, the SQL type of the column, if it can contain NULL), (ColumnName2, ...), ...\nEnd the sequence with an empty line")
             res = input()
-        if db.get_number_tables() == 0:
-            print("ERROR: Your database must contain at least 1 table.")
+            while res != '':
+                try:
+                    parse_schema(res, db)
+                except ParserException as err:
+                    print("ERROR: Your schema does not correspond to our exigences because " + str(err) + ". Please correct it")
+                res = input()
+            if db.get_number_tables() == 0:
+                print("ERROR: Your database must contain at least 1 table.")
+            else:
+                askDb = False
 
 print("\n\n\n\n")
 

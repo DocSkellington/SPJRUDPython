@@ -75,6 +75,22 @@ class MissingTableException(DatabaseException):
             res += "\t" + table + "\n"
         return res
 
+class DatabaseNotFoundException(DatabaseException):
+    """ Handles the case where the user wants to use a database but the filepath does not lead to a database """
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return "The database you want to use (" + self.name + ") does not exist. Please check the spelling."
+
+class EmptyDatabaseException(DatabaseException):
+    """ Handles the case where the user wants to use an empty database """
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return "The database you want to use (" + self.name + ") is empty or is not a database."
+
 class ParserException(Error):
     """ Defines the exceptions for the parsers """
     pass

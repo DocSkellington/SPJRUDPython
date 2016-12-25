@@ -1,6 +1,7 @@
 import sqlite3
 import Description
 import copy
+import os.path
 from Exceptions import *
 
 class Database(object):
@@ -22,11 +23,15 @@ class Database(object):
             DB (str): The name of the database file
         """
         if self.DB != DB:
+            if not os.path.isfile(DB):
+                raise DatabaseNotFoundException(DB)
             self.DB = DB
             self.conn = sqlite3.connect(DB)
             self.c = self.conn.cursor()
             self.c.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = self.c.fetchall()
+            if len(tables) == 0:
+                raise EmptyDatabaseException(DB)
             for table in tables:
                 desc = self.describe(table[0])
                 description = Description.Description()
