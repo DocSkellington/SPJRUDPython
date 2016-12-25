@@ -175,14 +175,14 @@ Lorque \textit{\texttt{build\_AST}} rencontre un nom d'op\'eration, il r\'ecup\`
 De la liste~\ref{exempleDecom}, nous pouvons construire l'arbre suivant:
 
 \begin{ast}[H]
-	\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selecttion [.Relation ] ] ] ] ]
+	\Tree [.Rename [.Projection [.Union [.Selection [.Relation ] ] [.Selection [.Relation ] ] ] ] ]
 	\caption{AST de la d\'ecomposition de la requ\^ete exemple}
 \end{ast}
 
 Le nom indiqu\'e dans les n\oe{}uds est le nom de la classe employ\'ee.
 
 \section{V\'erification de l'AST}
-Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\oe{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes). Nous nous sommes bas\'es sur les d\'efinitions du cours th\'eoriques pour impl\'ementer cette m\'ethode.
+Une fois l'arbre construit, nous pouvons commencer \`a v\'erifier s'il est correct. Par \textit{correct}, nous entendons qu'il r\'epond aux exigences et \`a la logique de l'alg\`ebre relationnel (que les sch\'emas soient respect\'es, \ldots). Pour ce faire, chaque classe d\'efinit une fonction \textit{check}. Si l'op\'eration n'est pas une Relation, cette m\'ethode appelle le \textit{check} du/des n\oe{}ud(s) enfant(s). Cette m\'ethode construit \'egalement le sch\'ema qui d\'ecoule de celui du/des enfant(s) et de l'op\'eration (par exemple, la s\'election ne modifie pas le \textit{sorte} mais la projection peut retirer des colonnes). Nous nous sommes bas\'es sur les d\'efinitions du cours th\'eorique pour impl\'ementer cette m\'ethode.
 
 Si une erreur est d\'etect\'ee, une Exception d\'ecrivant le probl\`eme est lanc\'ee et r\'ecup\'er\'ee par la fonction \textit{main}. Ainsi, l'AST est correct et valid\'e si aucune exception n'a \'et\'e lanc\'ee.
 
@@ -226,7 +226,7 @@ Ainsi, notre requ\^ete~\ref{exempleDecom} donnerait la requ\^ete en SQL:\\
 \end{tabular}
 \\
 
-Les deux membres de l'Union auraient pu \^etre r\'eunis en une seule sous-requ\^ete en joignant les deux conditions par un \textit{OR} mais, dans un soucis de garder le code simple et efficace dans toutes les conditions, nous avons pr\'ef\'er\'e laisser l'Union telle quelle.
+Les deux membres de l'Union auraient pu \^etre r\'eunis en une seule sous-requ\^ete en joignant les deux conditions par un \textit{OR} mais, dans l'optique de garder le code simple et efficace dans toutes les conditions, nous avons pr\'ef\'er\'e laisser l'Union telle quelle.
 
 \section{Probl\`emes rencontr\'es}
 \subsection{Construction de l'AST}
@@ -244,7 +244,7 @@ Les r\'eponses \`a ces questions ont \'et\'e expliqu\'ees dans les sections pr\'
 Etant donn\'e que nous avons eu un autre projet, nous avons d\^u nous r\'epartir le travail afin d'\^etre capable de finir le projet.
 
 \subsection{Emploi de SQLite}
-Nous ne connaissions pas SQLite avant ce projet. Il nous a donc fallu apprendre \`a correctement communiquer avec ctte biblioth\`eque, en faisant des essais grâce \`a l'interpr\'eteur Python.
+Nous ne connaissions pas SQLite avant ce projet. Il nous a donc fallu apprendre \`a correctement communiquer avec ctte biblioth\`eque, en faisant des essais gr\^ace \`a l'interpr\'eteur Python.
 
 De plus, ce projet est le premier que nous avons fait en Python, mais cela ne nous a pas pos\'e de probl\`eme.
 \end{document}
